@@ -2,7 +2,7 @@ from django.contrib import admin
 
 # Register your models here.
 from .models import Site
-from .models import UserRoleOnSite
+from .models import Page
 
 admin.site.register(Site)
-admin.site.register(UserRoleOnSite)
+admin.site.register(Page)

@@ -3,7 +3,7 @@ from django.template import loader
 
 # Create your views here.
 from django.http import HttpResponse
-from .models import Site, UserRoleOnSite
+from .models import Site
 
 
 def index(request):
