@@ -1,8 +1,10 @@
 from FTPManager import FTPManager
+from credentials import PWD
+
 host = 'nexgate.ch'
 user = 'j4kim'
 port = 21
-password = 'iwc37QNA'
+password = PWD
 directory = 'exemple'
 filename = 'index.html'
 
