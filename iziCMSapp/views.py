@@ -1,12 +1,13 @@
 from django.shortcuts import render
 from django.template import loader
 from FTPManager import FTPManager
+from FTPManager.credentials import PWD
 
 
 host = 'nexgate.ch'
 user = 'j4kim'
 port = 21
-password = "iziCMS42"
+password = PWD
 directory = 'exemple'
 filename = 'index.html'
 
