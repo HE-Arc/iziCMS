@@ -1,0 +1,21 @@
+<!--<h1> testQuill </h1>
+
+{% load static %}
+<img src="{% static "iziCMSapp/test.png" %}" alt="My image"/> -->
+
+
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Full Editor - Quill</title>
+  <meta charset="utf-8">
+</head>
+<body>
+    <form type="post" action="/iziCMS/submitFTP">
+        <textarea id="myPage" rows="4" cols="50">{{ file }}</textarea>
+        <button type="submit">Submit</button>
+    </form>
+
+</body>
+</html>
