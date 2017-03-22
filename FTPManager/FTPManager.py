@@ -1,4 +1,5 @@
 from ftplib import FTP
+import io
 
 class FTPManager:
 
@@ -32,6 +33,12 @@ class FTPManager:
     def upload(self, directory, filename):
         ftp = self.connect(directory)
         ftp.storlines("STOR " + filename, open(filename, 'rb'))
+        ftp.quit()
+
+    def uploadTextInFile(self, directory, filename, text):
+        ftp = self.connect(directory)
+        f = io.BytesIO(text.encode("utf-8"))
+        ftp.storlines("STOR " + filename, f)
         ftp.quit()
 
 class Reader:
