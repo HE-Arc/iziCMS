@@ -36,35 +36,22 @@ def testFTP(request):
     # creation du ftp manager
     ftp = FTPManager.FTPManager(host,port,user,password)
 
+    info = ""
+
+    if request.method == 'POST':
+
+        form = formUploadHtml(request.POST)
+        if form.is_valid():
+            pageContent = form.cleaned_data['pageContent']
+            ftp.uploadTextInFile(directory,filename,pageContent)
+            info = "Page mise à jour"
+
     # download
     file = ftp.downloadRead(directory,filename)
 
     template = loader.get_template('iziCMS/testFTP.html')
     context = {
         'file': file,
-    }
-    return HttpResponse(template.render(context, request))
-
-def submitFTP(request):
-
-    if request.method == 'POST':
-
-        form = formUploadHtml(request.POST)
-        if form.is_valid():
-            # creation du ftp manager
-            ftp = FTPManager.FTPManager(host,port,user,password)
-            pageContent = form.cleaned_data['pageContent']
-            ftp.uploadTextInFile(directory,filename,pageContent)
-            return HttpResponseRedirect('/')
-
-        # creation du ftp manager
-    ftp = FTPManager.FTPManager(host,port,user,password)
-
-        # download
-    file = ftp.downloadRead(directory,filename)
-
-    template = loader.get_template('iziCMS/testFTP.html')
-    context = {
-        'file': file,
+        'informationMessage' : info
     }
     return HttpResponse(template.render(context, request))
