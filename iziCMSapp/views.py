@@ -22,7 +22,7 @@ logger = logging.getLogger(__name__)
 
 def index(request):
     sites = Site.objects.all()
-    template = loader.get_template('iziCMS/index.html')
+    template = loader.get_template('iziCMS/websites.index.html')
     context = {
         'sites': sites,
     }
@@ -51,7 +51,7 @@ def submitFTP(request):
             ftp = FTPManager.FTPManager(host,port,user,password)
             pageContent = form.cleaned_data['pageContent']
             ftp.uploadTextInFile(directory,filename,pageContent)
-            return HttpResponseRedirect('/iziCMS/')
+            return HttpResponseRedirect('/')
 
         # creation du ftp manager
     ftp = FTPManager.FTPManager(host,port,user,password)

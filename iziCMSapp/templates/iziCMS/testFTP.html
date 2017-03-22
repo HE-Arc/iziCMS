@@ -12,7 +12,7 @@
   <meta charset="utf-8">
 </head>
 <body>
-    <form method="post" action="/iziCMS/submitFTP/">
+    <form method="post" action="/submitFTP/">
         {% csrf_token %}
         {{ form }}
         <textarea id="pageContent" name ="pageContent" rows="4" cols="50">{{ file }}</textarea>
