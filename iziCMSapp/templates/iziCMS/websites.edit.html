@@ -1,5 +1,13 @@
 {% extends "iziCMS/base.html" %}
 
 {% block content %}
-<h2>{% block title %}Website {{ site.name }}{% endblock %}</h2>
+    <h1>{% block title %}Website {{ site.name }}{% endblock %}</h1>
+    <h2>Pages</h2>
+    <ul>
+    {% for page in pages %}
+        <li>
+        {{ page.path }}
+        </li>
+    {% endfor %}
+    </ul>
 {% endblock %}
