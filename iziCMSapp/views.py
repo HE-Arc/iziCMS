@@ -14,19 +14,23 @@ password = credentials.PWD
 directory = 'exemple'
 filename = 'index.html'
 
-# Create your views here.
 from django.http import HttpResponse
 from .models import Site
 
 logger = logging.getLogger(__name__)
 
-def index(request):
+def websites_index(request):
     sites = Site.objects.all()
     template = loader.get_template('iziCMS/websites.index.html')
     context = {
         'sites': sites,
     }
     return HttpResponse(template.render(context, request))
+
+def websites_edit(request, website_id=0):
+    site = Site.objects.get(id=website_id)
+    template = loader.get_template('iziCMS/websites.edit.html')
+    return HttpResponse(template.render({'site':site}, request))
 
 def testFTP(request):
     # creation du ftp manager
