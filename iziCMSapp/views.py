@@ -3,7 +3,6 @@ from django.template import loader
 from FTPManager import FTPManager
 from FTPManager.credentials import PWD
 
-
 host = 'nexgate.ch'
 user = 'j4kim'
 port = 21
@@ -18,7 +17,7 @@ from .models import Site
 
 def index(request):
     sites = Site.objects.all()
-    template = loader.get_template('iziCMS/index.html')
+    template = loader.get_template('iziCMS/websites.index.html')
     context = {
         'sites': sites,
     }
