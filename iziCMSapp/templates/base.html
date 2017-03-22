@@ -1,3 +1,5 @@
+{% load static %}
+
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -16,14 +18,20 @@
       <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
     <![endif]-->
 
-    {% load static %}
+    <!-- global css -->
     <link rel="stylesheet" type="text/css" href="{% static 'style.css' %}" />
+
+    <!-- extra css -->
+    {% block css %}{% endblock %}
 </head>
 
 <body>
     <div class="container">
         {% block content %}{% endblock %}
     </div>
+
+    <!-- extra js -->
+    {% block js %}{% endblock %}
 
 {#    <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->#}
 {#    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>#}

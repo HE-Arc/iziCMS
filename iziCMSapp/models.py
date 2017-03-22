@@ -4,9 +4,9 @@ from django.conf import settings
 class Site(models.Model):
     name = models.CharField(max_length=200, default="")
     url = models.URLField(default="")
-    FTPHost = models.URLField(default="")
-    FTPId = models.CharField(max_length=200, default="")
-    FTPPort = models.IntegerField(default=21)
+    ftp_host = models.CharField(max_length=200, default="")
+    ftp_user = models.CharField(max_length=200, default="")
+    ftp_port = models.IntegerField(default=21)
     users = models.ManyToManyField(settings.AUTH_USER_MODEL)
     def __str__(self):
         return self.name

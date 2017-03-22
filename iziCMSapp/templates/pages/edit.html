@@ -1,5 +1,30 @@
 {% extends "../base.html" %}
+{% load static %}
 
 {% block content %}
     <h1>{% block title %}Website {{ site.name }} > Page {{ page.path }}{% endblock %}</h1>
+
+    <div id="iziCMSeditor">
+        {{ file|safe }}
+    </div>
+
+    <form method="post" action="{% url 'pages_update' site.id page.id %}">
+        {% csrf_token %}
+        <input type="hidden" id="pageContent" name="pageContent">
+        <input type="password" name="password" placeholder="FTP password">
+        <button type="submit">Save</button>
+    </form>
+{% endblock %}
+
+{% block js %}
+    <!-- Include the Quill library -->
+    <script src="https://cdn.quilljs.com/1.2.2/quill.js"></script>
+
+    <!-- specific script for this page -->
+    <script src="{% static 'pages/edit.js' %}"></script>
+{% endblock %}
+
+{% block css %}
+    <!-- Include Quill stylesheet -->
+    <link href="https://cdn.quilljs.com/1.2.2/quill.snow.css" rel="stylesheet">
 {% endblock %}

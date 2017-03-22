@@ -1,18 +1,7 @@
-from django.shortcuts import render
+from django.shortcuts import redirect
 from django.template import loader
 from FTPManager import FTPManager
-from FTPManager import credentials
-from .forms.formUploadHtml import formUploadHtml
-from django.http import HttpResponseRedirect
 import logging
-
-
-host = 'nexgate.ch'
-user = 'j4kim'
-port = 21
-password = credentials.PWD
-directory = 'exemple'
-filename = 'index.html'
 
 from django.http import HttpResponse
 from .models import Site
@@ -38,15 +27,6 @@ def websites_index(request):
     }
     return HttpResponse(template.render(context, request))
 
-def websites_edit(request, website_id):
-    site = Site.objects.get(id=website_id)
-    template = loader.get_template('websites/edit.html')
-    return HttpResponse(
-        template.render({
-            'site':site,
-            'pages':site.page_set.all()
-        }, request))
-
 def websites_add(request):
     return HttpResponse(loader.get_template('websites/add.html').render(request))
 
@@ -54,12 +34,27 @@ def websites_add(request):
 ### PAGES
 ###
 
+def pages_index(request, website_id):
+    site = Site.objects.get(id=website_id)
+    template = loader.get_template('pages/index.html')
+    return HttpResponse(
+        template.render({
+            'site':site,
+            'pages':site.page_set.all()
+        }, request))
+
 def pages_edit(request, website_id, page_id):
     site = Site.objects.get(id=website_id)
     page = site.page_set.get(id=page_id)
+
+    pwd = request.POST['password']
+    ftp = FTPManager.FTPManager(site.ftp_host, site.ftp_port, site.ftp_user, pwd)
+    file = ftp.downloadRead("", page.path)
+
     template = loader.get_template('pages/edit.html')
+
     return HttpResponse(
-        template.render({'site':site,'page':page}, request))
+        template.render({'site':site,'page':page, 'file':file}, request))
 
 def pages_add(request, website_id):
     site = Site.objects.get(id=website_id)
@@ -68,30 +63,18 @@ def pages_add(request, website_id):
             'pages/add.html'
         ).render({'site':site},request))
 
+def pages_update(request, website_id, page_id):
+    site = Site.objects.get(id=website_id)
+    page = site.page_set.get(id=page_id)
+
+    pwd = request.POST['password']
+    pageContent = request.POST['pageContent']
+
+    ftp = FTPManager.FTPManager(site.ftp_host, site.ftp_port, site.ftp_user, pwd)
+    ftp.uploadTextInFile("", page.path, pageContent)
+
+    return redirect('pages_index', website_id=site.id)
+
 ###
 ### OTHER
 ###
-
-def testFTP(request):
-    # creation du ftp manager
-    ftp = FTPManager.FTPManager(host,port,user,password)
-
-    info = ""
-
-    if request.method == 'POST':
-
-        form = formUploadHtml(request.POST)
-        if form.is_valid():
-            pageContent = form.cleaned_data['pageContent']
-            ftp.uploadTextInFile(directory,filename,pageContent)
-            info = "Page mise à jour"
-
-    # download
-    file = ftp.downloadRead(directory,filename)
-
-    template = loader.get_template('testFTP.html')
-    context = {
-        'file': file,
-        'informationMessage' : info
-    }
-    return HttpResponse(template.render(context, request))

@@ -5,7 +5,7 @@
 
     <ul>
     {% for site in sites %}
-        <li><a href="{% url 'websites_edit' site.id %}">{{ site.name }}</a></li>
+        <li><a href="{% url 'pages_index' site.id %}">{{ site.name }}</a></li>
     {% endfor %}
     </ul>
 
