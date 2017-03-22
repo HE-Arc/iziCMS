@@ -1,18 +1,23 @@
 from django.shortcuts import render
 from django.template import loader
 from FTPManager import FTPManager
-from FTPManager.credentials import PWD
+from FTPManager import credentials
+from .forms.formUploadHtml import formUploadHtml
+from django.http import HttpResponseRedirect
+import logging
+
 
 host = 'nexgate.ch'
 user = 'j4kim'
 port = 21
-password = PWD
+password = credentials.PWD
 directory = 'exemple'
 filename = 'index.html'
 
 from django.http import HttpResponse
 from .models import Site
 
+logger = logging.getLogger(__name__)
 
 def websites_index(request):
     sites = Site.objects.all()
@@ -32,6 +37,30 @@ def testFTP(request):
     ftp = FTPManager.FTPManager(host,port,user,password)
 
     # download
+    file = ftp.downloadRead(directory,filename)
+
+    template = loader.get_template('iziCMS/testFTP.html')
+    context = {
+        'file': file,
+    }
+    return HttpResponse(template.render(context, request))
+
+def submitFTP(request):
+
+    if request.method == 'POST':
+
+        form = formUploadHtml(request.POST)
+        if form.is_valid():
+            # creation du ftp manager
+            ftp = FTPManager.FTPManager(host,port,user,password)
+            pageContent = form.cleaned_data['pageContent']
+            ftp.uploadTextInFile(directory,filename,pageContent)
+            return HttpResponseRedirect('/')
+
+        # creation du ftp manager
+    ftp = FTPManager.FTPManager(host,port,user,password)
+
+        # download
     file = ftp.downloadRead(directory,filename)
 
     template = loader.get_template('iziCMS/testFTP.html')

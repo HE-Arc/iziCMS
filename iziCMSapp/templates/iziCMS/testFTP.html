@@ -12,8 +12,10 @@
   <meta charset="utf-8">
 </head>
 <body>
-    <form type="post" action="/submitFTP">
-        <textarea id="myPage" rows="4" cols="50">{{ file }}</textarea>
+    <form method="post" action="/submitFTP/">
+        {% csrf_token %}
+        {{ form }}
+        <textarea id="pageContent" name ="pageContent" rows="4" cols="50">{{ file }}</textarea>
         <button type="submit">Submit</button>
     </form>
 
