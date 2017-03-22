@@ -5,9 +5,7 @@
     <h2>Pages</h2>
     <ul>
     {% for page in pages %}
-        <li>
-        {{ page.path }}
-        </li>
+        <li><a href="{% url 'page_edit' site.id page.id %}">{{ page.path }}</a></li>
     {% endfor %}
     </ul>
 {% endblock %}
