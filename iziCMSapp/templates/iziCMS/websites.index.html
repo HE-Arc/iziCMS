@@ -2,9 +2,14 @@
 
 {% block content %}
     <h1>{% block title %}My Websites{% endblock %}</h1>
+
     <ul>
     {% for site in sites %}
         <li><a href="{% url 'websites_edit' site.id %}">{{ site.name }}</a></li>
     {% endfor %}
     </ul>
+
+    <a href="{% url 'websites_add' %}" type="button" class="btn btn-default btn-sm">
+      <span class="glyphicon glyphicon-plus"></span> Add website
+    </a>
 {% endblock %}

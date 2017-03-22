@@ -36,13 +36,22 @@ def websites_edit(request, website_id):
             'pages':site.page_set.all()
         }, request))
 
-def page_edit(request, website_id, page_id):
+def websites_add(request):
+    return HttpResponse(loader.get_template('iziCMS/websites.add.html').render(request))
+
+def pages_edit(request, website_id, page_id):
     site = Site.objects.get(id=website_id)
     page = site.page_set.get(id=page_id)
-    template = loader.get_template('iziCMS/page.edit.html')
+    template = loader.get_template('iziCMS/pages.edit.html')
     return HttpResponse(
         template.render({'site':site,'page':page}, request))
 
+def pages_add(request, website_id):
+    site = Site.objects.get(id=website_id)
+    return HttpResponse(
+        loader.get_template(
+            'iziCMS/pages.add.html'
+        ).render({'site':site},request))
 
 def testFTP(request):
     # creation du ftp manager
