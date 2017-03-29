@@ -48,8 +48,7 @@ def pages_edit(request, website_id, page_id):
     page = site.page_set.get(id=page_id)
 
     pwd = request.POST['password']
-    ftp = FTPManager.FTPManager(site.ftp_host, site.ftp_port, site.ftp_user, pwd)
-    file = ftp.downloadRead("", page.path)
+    file = FTPManager.download(site.ftp_host, site.ftp_port, site.ftp_user, pwd, "", page.path)
 
     template = loader.get_template('pages/edit.html')
 
@@ -70,8 +69,7 @@ def pages_update(request, website_id, page_id):
     pwd = request.POST['password']
     pageContent = request.POST['pageContent']
 
-    ftp = FTPManager.FTPManager(site.ftp_host, site.ftp_port, site.ftp_user, pwd)
-    ftp.uploadTextInFile("", page.path, pageContent)
+    FTPManager.upload(site.ftp_host, site.ftp_port, site.ftp_user, pwd, "", page.path, pageContent)
 
     return redirect('pages_index', website_id=site.id)
 
