@@ -18,6 +18,7 @@ class Page(models.Model):
     site = models.ForeignKey(Site, on_delete=models.CASCADE)
     path = models.CharField(max_length=200, default="")
     selector = models.CharField(max_length=200, blank=True, default="")
+    link = models.URLField(default="")
 
     def __str__(self):
         return self.path

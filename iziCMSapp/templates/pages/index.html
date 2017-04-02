@@ -7,12 +7,11 @@
     <ul>
     {% for page in pages %}
         <li>
-            {{ page.path }} (<a href="{{ page.link }}" target="_blank">preview</a>)
-            <form method="post" action="{% url 'pages_edit' site.id page.id %}">
-                {% csrf_token %}
-                <input type="password" name="password" placeholder="FTP password">
-                <button type="submit">Edit</button>
-            </form>
+            {{ page.path }}
+            <a href="{% url 'pages_edit' site.id page.id %}">edit</a>
+            {% if page.link %}
+                <a href="{{ page.link }}" target="_blank">show</a>
+            {% endif %}
         </li>
     {% endfor %}
     </ul>
