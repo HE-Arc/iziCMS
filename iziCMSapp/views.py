@@ -1,4 +1,4 @@
-from django.shortcuts import redirect
+from django.shortcuts import redirect, render
 from django.template import loader
 from django.views.decorators.csrf import csrf_protect, csrf_exempt
 
@@ -16,13 +16,12 @@ logger = logging.getLogger(__name__)
 ###
 
 def home(request):
-    return HttpResponse(loader.get_template('home.html').render(request))
+    return render(request, 'home.html')
 
 ###
 ### WEBSITES
 ###
 
-@csrf_exempt # sans ça erreur csrf impossible à résoudre
 def websites_connect(request):
     host = request.POST['host']
     port = request.POST['port']
@@ -47,12 +46,11 @@ def websites_connect(request):
 
 def pages_index(request, website_id):
     site = Site.objects.get(id=website_id)
-    template = loader.get_template('pages/index.html')
-    return HttpResponse(
-        template.render({
+
+    return render(request, 'pages/index.html', {
             'site':site,
             'pages':site.page_set.all()
-        }, request))
+        })
 
 def pages_edit(request, website_id, page_id):
     site = Site.objects.get(id=website_id)
@@ -61,17 +59,11 @@ def pages_edit(request, website_id, page_id):
     pwd = request.session['pwd']
     file = FTPManager.download(site.ftp_host, site.ftp_port, site.ftp_user, pwd, "", page.path)
 
-    template = loader.get_template('pages/edit.html')
-
-    return HttpResponse(
-        template.render({'site':site,'page':page, 'file':file}, request))
+    return render(request, 'pages/edit.html', {'site':site,'page':page, 'file':file})
 
 def pages_add(request, website_id):
     site = Site.objects.get(id=website_id)
-    return HttpResponse(
-        loader.get_template(
-            'pages/add.html'
-        ).render({'site':site},request))
+    return render(request, 'pages/add.html', {'site':site})
 
 def pages_update(request, website_id, page_id):
     site = Site.objects.get(id=website_id)
