@@ -1,70 +1,81 @@
-from django.shortcuts import render
+from django.shortcuts import redirect, render
 from django.template import loader
+from django.views.decorators.csrf import csrf_protect, csrf_exempt
+
 from FTPManager import FTPManager
-from FTPManager import credentials
-from .forms.formUploadHtml import formUploadHtml
-from django.http import HttpResponseRedirect
 import logging
 
-
-host = 'nexgate.ch'
-user = 'j4kim'
-port = 21
-password = credentials.PWD
-directory = 'exemple'
-filename = 'index.html'
-
 from django.http import HttpResponse
+
 from .models import Site
 
 logger = logging.getLogger(__name__)
 
-def websites_index(request):
-    sites = Site.objects.all()
-    template = loader.get_template('iziCMS/websites.index.html')
-    context = {
-        'sites': sites,
-    }
-    return HttpResponse(template.render(context, request))
+###
+### HOME
+###
 
-def websites_edit(request, website_id=0):
+def home(request):
+    return render(request, 'home.html')
+
+###
+### WEBSITES
+###
+
+def websites_connect(request):
+    host = request.POST['host']
+    port = request.POST['port']
+    username = request.POST['username']
+    pwd = request.POST['pwd']
+
+    # todo: ftp test, redirect back if it fails
+
+    try:
+        site = Site.objects.get(ftp_host=host, ftp_user=username)
+    except Site.DoesNotExist:
+        return redirect('home')
+        # todo: create a website
+
+    request.session['pwd'] = pwd
+
+    return redirect('pages_index', website_id=site.id)
+
+###
+### PAGES
+###
+
+def pages_index(request, website_id):
     site = Site.objects.get(id=website_id)
-    template = loader.get_template('iziCMS/websites.edit.html')
-    return HttpResponse(template.render({'site':site}, request))
 
-def testFTP(request):
-    # creation du ftp manager
-    ftp = FTPManager.FTPManager(host,port,user,password)
+    return render(request, 'pages/index.html', {
+            'site':site,
+            'pages':site.page_set.all()
+        })
 
-    # download
-    file = ftp.downloadRead(directory,filename)
+def pages_edit(request, website_id, page_id):
+    site = Site.objects.get(id=website_id)
+    page = site.page_set.get(id=page_id)
 
-    template = loader.get_template('iziCMS/testFTP.html')
-    context = {
-        'file': file,
-    }
-    return HttpResponse(template.render(context, request))
+    pwd = request.session['pwd']
+    file = FTPManager.download(site.ftp_host, site.ftp_port, site.ftp_user, pwd, "", page.path)
 
-def submitFTP(request):
+    return render(request, 'pages/edit.html', {'site':site,'page':page, 'file':file})
 
-    if request.method == 'POST':
+def pages_add(request, website_id):
+    site = Site.objects.get(id=website_id)
+    return render(request, 'pages/add.html', {'site':site})
 
-        form = formUploadHtml(request.POST)
-        if form.is_valid():
-            # creation du ftp manager
-            ftp = FTPManager.FTPManager(host,port,user,password)
-            pageContent = form.cleaned_data['pageContent']
-            ftp.uploadTextInFile(directory,filename,pageContent)
-            return HttpResponseRedirect('/')
+def pages_update(request, website_id, page_id):
+    site = Site.objects.get(id=website_id)
+    page = site.page_set.get(id=page_id)
 
-        # creation du ftp manager
-    ftp = FTPManager.FTPManager(host,port,user,password)
+    pwd = request.session['pwd']
+    pageContent = request.POST['pageContent']
 
-        # download
-    file = ftp.downloadRead(directory,filename)
+    FTPManager.upload(site.ftp_host, site.ftp_port, site.ftp_user, pwd, "", page.path, pageContent)
 
-    template = loader.get_template('iziCMS/testFTP.html')
-    context = {
-        'file': file,
-    }
-    return HttpResponse(template.render(context, request))
+    return redirect('pages_index', website_id=site.id)
+
+###
+### OTHER
+###

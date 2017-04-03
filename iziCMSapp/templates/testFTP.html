@@ -1,0 +1,51 @@
+<!--<h1> testQuill </h1>
+
+{% load static %}
+<img src="{% static "iziCMSapp/test.png" %}" alt="My image"/> -->
+
+
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Full Editor - Quill</title>
+  <meta charset="utf-8">
+</head>
+<body>
+
+
+    <!-- Include stylesheet -->
+<link href="https://cdn.quilljs.com/1.2.2/quill.snow.css" rel="stylesheet">
+
+<div id="iziCMSeditor">
+    {{ file|safe }}
+</div>
+
+<!-- Include the Quill library -->
+<script src="https://cdn.quilljs.com/1.2.2/quill.js"></script>
+
+
+
+<br/>
+<form method="post" action="/testFTP/">
+    {% csrf_token %}
+    <input type="hidden" value="nope" id="pageContent" name="pageContent">
+    <button type="submit">Submit</button>
+</form>
+<br/>
+<b>{{ informationMessage }}</b>
+
+
+<script>
+  var quill = new Quill('#iziCMSeditor', {
+    theme: 'snow'
+  });
+
+  document.querySelector("form").onsubmit = function(){
+      document.getElementById("pageContent").value = document.querySelector(".ql-editor").innerHTML;
+  }
+
+</script>
+
+</body>
+</html>
