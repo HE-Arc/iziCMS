@@ -1,10 +1,8 @@
 from django.shortcuts import redirect, render
 from django.template import loader
-from django.views.decorators.csrf import csrf_protect, csrf_exempt
 
 from FTPManager import FTPManager
 import logging
-
 from django.http import HttpResponse
 
 from .models import Site
@@ -43,6 +41,12 @@ def websites_connect(request):
 ###
 ### PAGES
 ###
+
+def izi_edit(request):
+    """Handle requests from the bookmarklet"""
+    # todo: retrieve a Site model from url parameter
+    # todo: magic to get the page
+    return HttpResponse(request.GET.get('url', 'no url provided'))
 
 def pages_index(request, website_id):
     site = Site.objects.get(id=website_id)
