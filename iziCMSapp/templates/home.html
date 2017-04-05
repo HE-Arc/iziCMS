@@ -2,5 +2,46 @@
 
 {% block content %}
     <h1>{% block title %}Home{% endblock %}</h1>
-    <a href="{% url 'websites_index' %}">My websites</a>
+
+    <h2>Connect to your website</h2>
+
+    <p>Enter the FTP credentials of your website.</p>
+
+    <form class="form-horizontal" action="{% url 'websites_connect' %}" method="post">
+        {% csrf_token %}
+        <div class="form-group">
+            <label class="control-label col-sm-2" for="host">Host:</label>
+            <div class="col-sm-6">
+                <input type="text" class="form-control" id="host" name="host" placeholder="ftp.example.com">
+            </div>
+            <label class="control-label col-sm-1" for="port">Port:</label>
+            <div class="col-sm-3">
+                <input type="number" class="form-control" id="port" name="port" value="21">
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="control-label col-sm-2" for="username">Username:</label>
+            <div class="col-sm-10">
+                <input type="text" class="form-control" id="username" name="username" placeholder="FTP username">
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="control-label col-sm-2" for="pwd">Password:</label>
+            <div class="col-sm-10">
+                <input type="password" class="form-control" id="pwd" name="pwd" placeholder="FTP password">
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-sm-offset-2 col-sm-10">
+                <div class="checkbox">
+                    <label><input type="checkbox" name="remember"> Remember me</label>
+                </div>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-sm-offset-2 col-sm-10">
+                <button type="submit" class="btn btn-default">Connect</button>
+            </div>
+        </div>
+    </form>
 {% endblock %}
