@@ -3,5 +3,5 @@
 */
 function izi(){
     // pour l'instant, simple redirection sur iziCMS
-    window.location.replace("http://127.0.0.1:8000/izi_edit?url="+window.location.href);
+    window.location = "http://127.0.0.1:8000/izi_edit/" + location.hostname + "/" + location.pathname
 }

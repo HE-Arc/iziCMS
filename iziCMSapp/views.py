@@ -42,12 +42,6 @@ def websites_connect(request):
 ### PAGES
 ###
 
-def izi_edit(request):
-    """Handle requests from the bookmarklet"""
-    # todo: retrieve a Site model from url parameter
-    # todo: magic to get the page
-    return HttpResponse(request.GET.get('url', 'no url provided'))
-
 def pages_index(request, website_id):
     site = Site.objects.get(id=website_id)
 
@@ -83,3 +77,10 @@ def pages_update(request, website_id, page_id):
 ###
 ### OTHER
 ###
+
+def izi_edit(request, host, path):
+    """Handle requests from the bookmarklet"""
+    # todo: retrieve a Site model from host
+    # todo: magic to get the page from path, try to find index.html if the path is a diretory
+    # todo: redirect to pages_edit
+    return HttpResponse("host: <b>{}</b>, path: <b>{}</b>".format(host, path))
