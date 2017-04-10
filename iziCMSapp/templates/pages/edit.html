@@ -5,12 +5,13 @@
     <h1>{% block title %}Website {{ site.name }} > Page {{ page.path }}{% endblock %}</h1>
 
     <div id="iziCMSeditor">
-        {{ file|safe }}
+        {{ tag|safe }}
     </div>
-
     <form method="post" action="{% url 'pages_update' site.id page.id %}">
         {% csrf_token %}
-        <input type="hidden" id="pageContent" name="pageContent">
+        <input type="hidden" id="editContent" name="editContent">
+        <input type="hidden" id="pageContent" name="pageContent" value="{{ file }}">
+        <input type="password" name="password" placeholder="FTP password">
         <button class="btn btn-primary" type="submit">Save</button>
     </form>
 {% endblock %}
