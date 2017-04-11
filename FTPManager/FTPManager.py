@@ -20,3 +20,8 @@ def upload(host, port, user, password, directory, filename, text):
     f = io.BytesIO(text.encode("utf-8"))
     ftp.storlines("STOR " + filename, f)
     ftp.quit()
+
+
+def test(host, port, user, password):
+    # todo
+    return True

@@ -59,11 +59,13 @@ def pages_edit(request, website_id, page_id):
     pwd = request.session['pwd']
     file = FTPManager.download(site.ftp_host, site.ftp_port, site.ftp_user, pwd, "", page.path)
 
-    soup = BeautifulSoup(file, "html.parser")
-    tag = soup.find(id="iziEdit")
-    template = loader.get_template('pages/edit.html')
+    # parse the file as html
+    soup = BeautifulSoup(file)
+    # gets the first element that match the selector
+    tag = soup.select(page.selector)[0]
+    # todo: handle multiple edit
 
-    return render(request, 'pages/edit.html', {'site':site,'page':page, 'file':file, 'tag':str(tag)})
+    return render(request, 'pages/edit.html', {'site':site,'page':page, 'file':file, 'tag':tag.prettify()})
 
 def pages_add(request, website_id):
     site = Site.objects.get(id=website_id)
@@ -74,18 +76,24 @@ def pages_update(request, website_id, page_id):
     page = site.page_set.get(id=page_id)
 
     pwd = request.session['pwd']
-    pageContent = request.POST['pageContent']
-    editContent = request.POST['editContent']
 
-    soup = BeautifulSoup(pageContent, "html.parser")
+    # the file content has not changed, but we need it
+    file_content = request.POST['fileContent']
+    # the new content of the selected element
+    edit_content = request.POST['editContent']
 
-    newDiv = soup.new_tag('div')
-    newDiv['id'] = 'iziEdit'
-    newDiv.string = editContent
+    # parse the entire file again (todo: possible DRY?)
+    file = BeautifulSoup(file_content)
 
-    soup.find(id="iziEdit").replace_with(newDiv)
+    # parse the new content
+    new_content = BeautifulSoup(edit_content)
 
-    FTPManager.upload(site.ftp_host, site.ftp_port, site.ftp_user, pwd, "", page.path, html.unescape(str(soup)))
+    # retrieve the selected element and replace its content by the new_content
+    elem = file.select(page.selector)[0]
+    elem.clear()
+    elem.append(new_content)
+
+    FTPManager.upload(site.ftp_host, site.ftp_port, site.ftp_user, pwd, "", page.path, file.prettify())
 
     return redirect('pages_index', website_id=site.id)
 
