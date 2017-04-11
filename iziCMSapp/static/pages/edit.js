@@ -3,15 +3,22 @@
 var quill = new Quill('#iziCMSeditor', {
     theme: 'snow',
     modules: {
-        toolbar: true
+        toolbar: [
+            [{ 'header': [1, 2, 3, false] }],
+            ['bold', 'italic', 'underline', 'strike'],
+            ['link','image','video','formula'],
+            [{ 'font': [] }],
+            [{ 'align': [] }],
+            [{ 'color': [] }, { 'background': [] }],
+            ['blockquote', 'code-block'],
+            [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+            [{ 'script': 'sub'}, { 'script': 'super' }],
+            [{ 'indent': '-1'}, { 'indent': '+1' }],
+            ['clean']
+        ]
       }
     });
 
-
-//document.getElementsByClassName('ql-toolbar ql-snow').style.visibility = 'visible'
-
 document.querySelector("form").onsubmit = function(){
-    //document.getElementById("edition").innerHTML  = document.querySelector(".ql-editor").innerHTML;
-    //document.getElementById("pageContent").value = document.getElementById("iziCMSeditor").innerHTML;
     document.getElementById("editContent").value = document.querySelector(".ql-editor").innerHTML;
 };
