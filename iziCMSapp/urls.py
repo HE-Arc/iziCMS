@@ -4,8 +4,10 @@ from . import views
 
 urlpatterns = [
     url(r'^$', views.home, name='home'),
+    url(r'^connect_hostname$', views.connect_hostname, name='connect_hostname'),
 
     url(r'^websites/connect$', views.websites_connect, name='websites_connect'),
+    url(r'^websites/configure', views.websites_configure, name='websites_configure'),
 
     url(r'^websites/(?P<website_id>[0-9]+)/pages/$', views.pages_index, name='pages_index'),
     url(r'^websites/(?P<website_id>[0-9]+)/pages/(?P<page_id>[0-9]+)$', views.pages_edit, name='pages_edit'),
