@@ -2,9 +2,8 @@ from django.shortcuts import redirect, render
 
 from FTPManager import FTPManager
 import logging
-from django.http import HttpResponse
 
-from .models import Site
+from .models import Site, Page
 from bs4 import BeautifulSoup
 
 logger = logging.getLogger(__name__)
@@ -95,7 +94,7 @@ def websites_connect(request):
 
 def websites_configure(request, website_id):
     """
-    Show the form to configure a existing or new website.
+    Show the form to configure an existing or new website.
     """
     #todo
 
@@ -120,15 +119,13 @@ def pages_edit(request, website_id, page_id):
 
     # parse the file as html
     soup = BeautifulSoup(file)
+
+
     # gets the first element that match the selector
     tag = soup.select(page.selector)[0]
     # todo: handle multiple edit
 
     return render(request, 'pages/edit.html', {'site':site,'page':page, 'file':file, 'tag':tag.prettify()})
-
-def pages_add(request, website_id):
-    site = Site.objects.get(id=website_id)
-    return render(request, 'pages/add.html', {'site':site})
 
 def pages_update(request, website_id, page_id):
     site = Site.objects.get(id=website_id)
