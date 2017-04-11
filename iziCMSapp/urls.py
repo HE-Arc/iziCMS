@@ -14,5 +14,5 @@ urlpatterns = [
     url(r'^websites/(?P<website_id>[0-9]+)/pages/add$', views.pages_add, name='pages_add'),
     url(r'^websites/(?P<website_id>[0-9]+)/pages/(?P<page_id>[0-9]+)/update$', views.pages_update, name='pages_update'),
 
-    url(r'^izi_edit/(?P<host>(\w|\.)+)/(?P<path>.+)$', views.izi_edit, name='izi_edit'), # (\w|\.)+ lettres ou .
+    url(r'^izi_edit/(?P<hostname>(\w|\.)+)/(?P<path>.+)$', views.izi_edit, name='izi_edit'), # (\w|\.)+ lettres ou .
 ]

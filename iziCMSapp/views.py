@@ -156,13 +156,42 @@ def pages_update(request, website_id, page_id):
 
     return redirect('pages_index', website_id=site.id)
 
+def pages_add(request, website_id):
+    site = Site.objects.get(id=website_id)
+    return render(request, 'pages/configure.html', {'site':site})
+
+def pages_update_config(request, website_id):
+    site = Site.objects.get(id=website_id)
+    path = request.POST['path']
+    selector = request.POST['selector']
+    page, created = Page.objects.update_or_create(
+        site=site, path=path, selector=selector
+    )
+    return redirect('pages_index', website_id=site.id)
+
 ###
 ### OTHER
 ###
 
-def izi_edit(request, host, path):
+def izi_edit(request, hostname, path):
     """Handle requests from the bookmarklet"""
-    # todo: retrieve a Site model from host
-    # todo: magic to get the page from path, try to find index.html if the path is a diretory
-    # todo: redirect to pages_edit
-    return HttpResponse("host: <b>{}</b>, path: <b>{}</b>".format(host, path))
+    # Retrieve a Site model from hostname
+    try:
+        site = Site.objects.get(hostname=hostname)
+    except Site.DoesNotExist:
+        return render(request, 'websites/configure.html', {
+            'hostname': hostname,
+            'message': "We don't know your website. You can create a new configuration here."
+        })
+
+    try:
+        page = site.page_set.get(path=path)
+    except Page.DoesNotExist:
+        # todo: magic to get the page from path, try to find index.html if the path is a diretory
+        # if it fails, propose to add the page
+        return render(request, 'pages/configure.html', {
+            'site':site,
+            'path':path,
+            'message':"This page is not configured yet."})
+
+    return redirect('pages_edit', website_id=site.id, page_id=page.id)
