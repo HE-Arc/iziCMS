@@ -4,13 +4,17 @@
 {% block content %}
     <h1>{% block title %}Website {{ site.name }} > Page {{ page.path }}{% endblock %}</h1>
 
-    <div id="iziCMSeditor">
-        {{ tag|safe }}
-    </div>
+
     <form method="post" action="{% url 'pages_update' site.id page.id %}">
+        {% for editableContent in listEditableContent %}
+        <div id="iziCMSeditor{{ forloop.counter0 }}">
+            {{ editableContent|safe }}
+        </div>
+        <input type="hidden" id="editContent{{ forloop.counter0 }}" name="editContent{{ forloop.counter0 }}">
+        {% endfor %}
         {% csrf_token %}
-        <input type="hidden" id="editContent" name="editContent">
         <input type="hidden" name="fileContent" value="{{ file }}">
+        <input type="hidden" name="numEditableContent" value="{{ listEditableContent|length }}">
 
         <button class="btn btn-primary" type="submit">Save</button>
     </form>
@@ -22,6 +26,12 @@
 
     <!-- specific script for this page -->
     <script src="{% static 'pages/edit.js' %}"></script>
+
+    <script>
+        {% for editableContent in listEditableContent %}
+            addEditor({{ forloop.counter0 }});
+        {% endfor %}
+    </script>
 {% endblock %}
 
 {% block css %}
