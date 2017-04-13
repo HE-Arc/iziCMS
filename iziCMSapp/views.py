@@ -17,6 +17,8 @@ def home(request):
     Show a simple form asking for a website hostname and a password.
     The form is sent to the connect_hostname view method.
     """
+    if 'site' in request.session:
+        return redirect('pages_index', website_id=request.session['site'])
     return render(request, 'home.html')
 
 def connect_hostname(request):
@@ -31,7 +33,7 @@ def connect_hostname(request):
     try:
         site = Site.objects.get(hostname=hostname) # exception raised here if the site is unknown
         if FTPManager.test(site.ftp_host, site.ftp_port, site.ftp_user, pwd):
-            request.session['hostname'] = hostname
+            request.session['site'] = site.id
             request.session['pwd'] = pwd
             return redirect('pages_index', website_id=site.id)
         else:
@@ -86,7 +88,7 @@ def websites_connect(request):
         ftp_user=username, ftp_port=port
     )
 
-    request.session['hostname'] = hostname
+    request.session['site'] = site.id
     request.session['pwd'] = pwd
 
     return redirect('pages_index', website_id=site.id)
