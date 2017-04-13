@@ -54,6 +54,9 @@ def connect_hostname(request):
                 'message':"We don't know your website yet, please register it using your FTP crendentials."
             })
 
+def disconnect(request):
+    request.session.clear()
+    return redirect('home')
 
 ###
 ### WEBSITES
