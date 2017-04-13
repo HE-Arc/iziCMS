@@ -2,21 +2,34 @@
 {% load static %}
 
 {% block content %}
-    <h1>{% block title %}Website {{ site.name }} > Page {{ page.path }}{% endblock %}</h1>
+    <h1>{% block title %}Page {{ page.path }}{% endblock %}</h1>
 
+    <p>
+        <a href="{% url 'pages_configure' site.id page.id %}"  type="button" class="btn btn-default btn-sm">
+          <span class="glyphicon glyphicon-wrench"></span> Configure
+        </a>
+
+        <a href="http://{{ site.hostname }}{{ page.path }}" target="_blank" type="button" class="btn btn-default btn-sm">
+          <span class="glyphicon glyphicon-globe"></span> Show
+        </a>
+    </p>
 
     <form method="post" action="{% url 'pages_update' site.id page.id %}">
-        {% for editableContent in listEditableContent %}
-        <div id="iziCMSeditor{{ forloop.counter0 }}">
-            {{ editableContent|safe }}
-        </div>
-        <input type="hidden" id="editContent{{ forloop.counter0 }}" name="editContent{{ forloop.counter0 }}">
-        {% endfor %}
         {% csrf_token %}
+        {% for editableContent in listEditableContent %}
+            <h4>{{ page.selector }} {{ forloop.counter0 }}</h4>
+            <div id="iziCMSeditor{{ forloop.counter0 }}">
+                {{ editableContent|safe }}
+            </div>
+            <input type="hidden" id="editContent{{ forloop.counter0 }}" name="editContent{{ forloop.counter0 }}">
+        {% endfor %}
         <input type="hidden" name="fileContent" value="{{ file }}">
         <input type="hidden" name="numEditableContent" value="{{ listEditableContent|length }}">
 
-        <button class="btn btn-primary" type="submit">Save</button>
+        <br>
+        <button type="submit" class="btn btn-primary">
+          <span class="glyphicon glyphicon-floppy-save"></span> Save
+        </button>
     </form>
 {% endblock %}
 

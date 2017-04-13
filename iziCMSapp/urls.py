@@ -15,6 +15,7 @@ urlpatterns = [
 
     url(r'^websites/(?P<website_id>[0-9]+)/pages/(?P<page_id>[0-9]+)$', views.pages_edit, name='pages_edit'),
     url(r'^websites/(?P<website_id>[0-9]+)/pages/(?P<page_id>[0-9]+)/update$', views.pages_update, name='pages_update'),
+    url(r'^websites/(?P<website_id>[0-9]+)/pages/(?P<page_id>[0-9]+)/configure$', views.pages_configure, name='pages_configure'),
 
     url(r'^izi_edit/(?P<hostname>(\w|\.)+)/(?P<path>.+)$', views.izi_edit, name='izi_edit'), # (\w|\.)+ lettres ou .
 ]

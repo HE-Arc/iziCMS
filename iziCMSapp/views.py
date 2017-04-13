@@ -145,7 +145,7 @@ def pages_update(request, website_id, page_id):
 
 
     # update all editable contents
-    tags = file.findAll(page.selector)
+    tags = file.select(page.selector)
     for i in range(int(request.POST['numEditableContent'])):
         print("i" + str(i))
         # the new content of the selected element
@@ -167,6 +167,11 @@ def pages_update(request, website_id, page_id):
 def pages_add(request, website_id):
     site = Site.objects.get(id=website_id)
     return render(request, 'pages/configure.html', {'site':site})
+
+def pages_configure(request, website_id, page_id):
+    site = Site.objects.get(id=website_id)
+    page = Page.objects.get(id=page_id)
+    return render(request, 'pages/configure.html', {'site':site, 'page':page})
 
 def pages_update_config(request, website_id):
     site = Site.objects.get(id=website_id)
@@ -199,7 +204,7 @@ def izi_edit(request, hostname, path):
         # if it fails, propose to add the page
         return render(request, 'pages/configure.html', {
             'site':site,
-            'path':path,
+            'page':{'path':path},
             'message':"This page is not configured yet."})
 
     return redirect('pages_edit', website_id=site.id, page_id=page.id)

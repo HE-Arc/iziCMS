@@ -1,21 +1,17 @@
 {% extends "../base.html" %}
 
 {% block content %}
-    <h1>{% block title %}Website {{ site.name }}{% endblock %}</h1>
-
+    <h1>{% block title %}{{ site.hostname }}{% endblock %}</h1>
     <h2>Pages</h2>
-    <ul>
+    <ul class="nav nav-pills nav-stacked">
     {% for page in pages %}
         <li>
-            {{ page.path }}
-            <a href="{% url 'pages_edit' site.id page.id %}">edit</a>
-            {% if page.link %}
-                <a href="{{ page.link }}" target="_blank">show</a>
-            {% endif %}
+            <a href="{% url 'pages_edit' site.id page.id %}">{{ page.path }}</a>
         </li>
     {% endfor %}
     </ul>
 
+    <br>
     <a href="{% url 'pages_add' site.id %}"  type="button" class="btn btn-default btn-sm">
       <span class="glyphicon glyphicon-plus"></span> Add page
     </a>
