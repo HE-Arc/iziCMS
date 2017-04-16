@@ -125,7 +125,6 @@ def pages_edit(request, website_id, page_id):
     # parse the file as html
     soup = BeautifulSoup(file)
 
-
     # gets all elements that match the selector
     listEditableContent = []
     if len(soup.select(page.selector)) > 0:
@@ -175,7 +174,7 @@ def pages_add(request, website_id):
 
 def pages_configure(request, website_id, page_id):
     site = Site.objects.get(id=website_id)
-    page = Page.objects.get(id=page_id)
+    page = site.page_set.get(id=page_id)
     return render(request, 'pages/configure.html', {'site':site, 'page':page})
 
 def pages_update_config(request, website_id):
