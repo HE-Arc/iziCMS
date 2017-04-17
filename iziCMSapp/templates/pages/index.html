@@ -1,22 +1,33 @@
 {% extends "../base.html" %}
 
 {% block content %}
-    <h1>{% block title %}Website {{ site.name }}{% endblock %}</h1>
-
-    <h2>Pages</h2>
-    <ul>
+    <h1>{% block title %}{{ site.hostname }}{% endblock %}</h1>
+    <h3>Pages</h3>
+    <ul class="nav nav-pills nav-stacked">
     {% for page in pages %}
         <li>
-            {{ page.path }}
-            <a href="{% url 'pages_edit' site.id page.id %}">edit</a>
-            {% if page.link %}
-                <a href="{{ page.link }}" target="_blank">show</a>
-            {% endif %}
+            <a href="{% url 'pages_edit' site.id page.id %}">{{ page.path }}</a>
         </li>
     {% endfor %}
     </ul>
 
+    <br>
     <a href="{% url 'pages_add' site.id %}"  type="button" class="btn btn-default btn-sm">
       <span class="glyphicon glyphicon-plus"></span> Add page
     </a>
+    <h3>Bookmarklet</h3>
+    <p>
+        You can use our <a target="_blank" href="https://en.wikipedia.org/wiki/Bookmarklet">bookmarklet</a> feature to simplify page edition.
+    </p>
+    <ol>
+        <li>
+            Drag and drop this to your bookmarks bar :
+            <a href="javascript:(function()%7B(function()%20%7Bfunction%20callback()%20%7Bizi()%3B%7Dvar%20s%20%3D%20document.createElement(%22script%22)%3Bs.src%20%3D%20%22http%3A%2F%2F127.0.0.1%3A8000%2Fstatic%2Fizi.js%22%3Bif%20(s.addEventListener)%20%7Bs.addEventListener(%22load%22%2C%20callback%2C%20false)%7D%20else%20if%20(s.readyState)%20%7Bs.onreadystatechange%20%3D%20callback%7Ddocument.head.appendChild(s)%3B%7D)()%7D)()">
+                izi
+            </a>
+        </li>
+        <li>Go to the web page you want to edit</li>
+        <li>Click the bookmarklet</li>
+    </ol>
+
 {% endblock %}
