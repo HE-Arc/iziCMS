@@ -1,15 +1,27 @@
 from django.db import models
 from django.conf import settings
 
-# Create your models here.
 class Site(models.Model):
-    name = models.CharField(max_length=200)
-    url = models.CharField(max_length=200)
+    # the "http" host of the website: www.exemple.com
+    hostname = models.CharField(max_length=255, default="", unique=True)
+    # the ftp host can be the same as well as totally different, common case: ftp.exemple.com
+    ftp_host = models.CharField(max_length=255, default="")
+    ftp_user = models.CharField(max_length=255, default="")
+    ftp_port = models.IntegerField(default=21) # 21 in most cases
+
+    # the base folder of the site in the ftp arborescence, not always /
+    root_folder = models.CharField(max_length=255, default="/")
+
     def __str__(self):
-        return self.name
+        return self.hostname
 
-
-class UserRoleOnSite(models.Model):
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+class Page(models.Model):
     site = models.ForeignKey(Site, on_delete=models.CASCADE)
-    isAdmin = models.BooleanField()
+    path = models.CharField(max_length=255, default="")
+    selector = models.CharField(max_length=255, default="body")
+
+    class Meta:
+        unique_together = ('site', 'path')
+
+    def __str__(self):
+        return self.path
