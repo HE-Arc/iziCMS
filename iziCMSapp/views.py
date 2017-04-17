@@ -120,7 +120,7 @@ def pages_edit(request, website_id, page_id):
     page = site.page_set.get(id=page_id)
 
     pwd = request.session['pwd']
-    file = FTPManager.download(site.ftp_host, site.ftp_port, site.ftp_user, pwd, "", page.path)
+    file = FTPManager.download(site.ftp_host, site.ftp_port, site.ftp_user, pwd, site.root_folder, page.path)
 
     # parse the file as html
     soup = BeautifulSoup(file)
@@ -146,7 +146,6 @@ def pages_update(request, website_id, page_id):
 
     # parse the entire file again (todo: possible DRY?)
     file = BeautifulSoup(file_content)
-
 
     # update all editable contents
     tags = file.select(page.selector)

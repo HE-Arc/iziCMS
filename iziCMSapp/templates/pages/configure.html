@@ -1,7 +1,7 @@
 {% extends "../base.html" %}
 
 {% block content %}
-    <h1>{% block title %}Configure Page{% endblock %}</h1>
+    <h1>{% block title %}Page configuration{% endblock %}</h1>
 
     <p>{{ message }}</p>
 
@@ -19,7 +19,6 @@
                 <input type="text" class="form-control" id="selector" name="selector" value="{{ page.selector }}">
             </div>
         </div>
-
         <input type="hidden" name="is_new" value="{{ is_new|default:"True" }}">
 
         <div class="form-group">
