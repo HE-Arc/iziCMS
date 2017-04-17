@@ -18,10 +18,9 @@
         {% csrf_token %}
         {% for editableContent in listEditableContent %}
             <h4>{{ page.selector }} {{ forloop.counter0 }}</h4>
-            <div id="iziCMSeditor{{ forloop.counter0 }}">
+            <textarea name="editContent{{ forloop.counter0 }}">
                 {{ editableContent|safe }}
-            </div>
-            <input type="hidden" id="editContent{{ forloop.counter0 }}" name="editContent{{ forloop.counter0 }}">
+            </textarea>
         {% endfor %}
         <input type="hidden" name="fileContent" value="{{ file }}">
         <input type="hidden" name="numEditableContent" value="{{ listEditableContent|length }}">
@@ -34,20 +33,16 @@
 {% endblock %}
 
 {% block js %}
-    <!-- Include the Quill library -->
-    <script src="https://cdn.quilljs.com/1.2.2/quill.js"></script>
+    <!-- Include the editor library -->
+{#    <script src="https://cdn.quilljs.com/1.2.2/quill.js"></script>#}
+
+    <script src='https://cloud.tinymce.com/stable/tinymce.min.js?apiKey=59apqlokg6wupr9euafvyvaek9x93jtnefaylhc80a2jg7hq'></script>
 
     <!-- specific script for this page -->
     <script src="{% static 'pages/edit.js' %}"></script>
-
-    <script>
-        {% for editableContent in listEditableContent %}
-            addEditor({{ forloop.counter0 }});
-        {% endfor %}
-    </script>
 {% endblock %}
 
 {% block css %}
     <!-- Include Quill stylesheet -->
-    <link href="https://cdn.quilljs.com/1.2.2/quill.snow.css" rel="stylesheet">
+{#    <link href="https://cdn.quilljs.com/1.2.2/quill.snow.css" rel="stylesheet">#}
 {% endblock %}
