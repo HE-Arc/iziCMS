@@ -1,12 +1,23 @@
 from django.shortcuts import redirect, render
 
 from FTPManager import FTPManager
+
 import logging
+import http.client
 
 from .models import Site, Page
 from bs4 import BeautifulSoup
 
 logger = logging.getLogger(__name__)
+
+
+def testHTTP(hostname):
+    try:
+        c = http.client.HTTPConnection(hostname)
+        c.request("HEAD", '')
+        return True
+    except:
+        return False
 
 ###
 ### HOME
