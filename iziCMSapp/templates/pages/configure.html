@@ -24,7 +24,12 @@
         <div class="form-group">
             <div class="col-sm-offset-2 col-sm-10">
                 <button type="submit" class="btn btn-default">Save</button>
+
+                {% if not is_new %}
+                    <a href="{% url 'pages_delete' site.id page.id %}" class="btn btn-danger">Delete</a>
+                {% endif %}
             </div>
+
         </div>
     </form>
 {% endblock %}

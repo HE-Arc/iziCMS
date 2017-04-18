@@ -28,7 +28,7 @@ def upload(host, port, user, password, directory, filename, text):
 def test(host, port, user, password):
     try:
         ftp = FTP()
-        ftp.connect(host, port)
+        ftp.connect(host, int(port))
         ftp.login(user = user, passwd = password)
         ftp.voidcmd("NOOP") # do nothing but raise an error in case of failure
         ftp.quit()
