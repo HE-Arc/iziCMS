@@ -38,11 +38,7 @@ def connect_hostname(request):
             return redirect('pages_index', website_id=site.id)
         else:
             return render(request, 'websites/configure.html', {
-                'hostname': hostname,
-                'ftp_host': site.ftp_host,
-                'port': site.ftp_host,
-                'username': site.ftp_user,
-                'pwd': pwd,
+                'site':site,
                 'is_new': False,
                 'message': "Unable to connect to your FTP server, please verify your configuration."
             })
@@ -101,7 +97,14 @@ def websites_configure(request, website_id):
     """
     Show the form to configure an existing or new website.
     """
-    #todo
+    site = Site.objects.get(id=website_id)
+    return render(request, 'websites/configure.html', {
+        'site': site
+    })
+
+def websites_delete(request, website_id):
+    Site.objects.get(id=website_id).delete()
+    return redirect('disconnect')
 
 ###
 ### PAGES
@@ -120,7 +123,10 @@ def pages_edit(request, website_id, page_id):
     page = site.page_set.get(id=page_id)
 
     pwd = request.session['pwd']
-    file = FTPManager.download(site.ftp_host, site.ftp_port, site.ftp_user, pwd, "", page.path)
+    try:
+        file = FTPManager.download(site.ftp_host, site.ftp_port, site.ftp_user, pwd, site.root_folder, page.path)
+    except:
+        return redirect('pages_configure', website_id, page_id)
 
     # parse the file as html
     soup = BeautifulSoup(file)
@@ -147,6 +153,7 @@ def pages_update(request, website_id, page_id):
     # parse the entire file again (todo: possible DRY?)
     file = BeautifulSoup(file_content)
 
+    print(request.POST.getlist())
 
     # update all editable contents
     tags = file.select(page.selector)
@@ -164,7 +171,7 @@ def pages_update(request, website_id, page_id):
         elem.append(new_content)
 
     # upload the file
-    FTPManager.upload(site.ftp_host, site.ftp_port, site.ftp_user, pwd, "", page.path, file.prettify())
+    FTPManager.upload(site.ftp_host, site.ftp_port, site.ftp_user, pwd, site.root_folder, page.path, file.prettify())
 
     return redirect('pages_index', website_id=site.id)
 
@@ -184,6 +191,12 @@ def pages_update_config(request, website_id):
     page, created = Page.objects.update_or_create(
         site=site, path=path, selector=selector
     )
+    return redirect('pages_index', website_id=site.id)
+
+def pages_delete(request, website_id, page_id):
+    site = Site.objects.get(id=website_id)
+    page = site.page_set.get(id=page_id)
+    page.delete()
     return redirect('pages_index', website_id=site.id)
 
 ###

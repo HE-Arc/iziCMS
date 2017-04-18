@@ -40,9 +40,9 @@
                   <span class="caret"></span>
               </a>
               <ul class="dropdown-menu">
-                <li><a href="#">Pages</a></li>
+                <li><a href="{% url 'pages_index' site.id %}">Pages</a></li>
                 <li><a href="{% url 'disconnect' %}">Disconnect</a></li>
-                <li><a href="#">Edit</a></li>
+                <li><a href="{% url 'websites_configure' site.id %}">Configure</a></li>
               </ul>
             </li>
           </ul>
