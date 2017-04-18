@@ -153,8 +153,6 @@ def pages_update(request, website_id, page_id):
     # parse the entire file again (todo: possible DRY?)
     file = BeautifulSoup(file_content)
 
-    print(request.POST.getlist())
-
     # update all editable contents
     tags = file.select(page.selector)
     for i in range(int(request.POST['numEditableContent'])):
