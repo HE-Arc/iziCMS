@@ -2,12 +2,22 @@ from django.shortcuts import redirect, render
 
 from FTPManager import FTPManager
 import logging
+import http.client
 from django.contrib import messages
 
 from .models import Site, Page
 from bs4 import BeautifulSoup
 
 logger = logging.getLogger(__name__)
+
+
+def testHTTP(hostname):
+    try:
+        c = http.client.HTTPConnection(hostname)
+        c.request("HEAD", '')
+        return True
+    except:
+        return False
 
 ###
 ### HOME
@@ -62,8 +72,7 @@ def disconnect(request):
 
 def websites_connect(request):
     """
-    Create or update a website using the POST parameters.
-    The is_new hidden input in websites_configure tells what to do.
+    Create a website using the POST parameters.
     Store hostname and password in the user session and open the page index of the site.
     """
     hostname = request.POST['hostname']
@@ -71,20 +80,19 @@ def websites_connect(request):
     port = request.POST['port']
     username = request.POST['username']
     pwd = request.POST['pwd']
-    is_new = request.POST['is_new']
 
-    if not FTPManager.test(ftp_host, port, username, pwd):
+    if not FTPManager.test(ftp_host, port, username, pwd) or not testHTTP(hostname):
         return render(request, 'websites/configure.html', {
             'hostname': hostname,
             'ftp_host': ftp_host,
             'port': port,
             'username': username,
             'pwd': pwd,
+            'is_new': False,
             'message': "Unable to connect to your FTP server, please verify your configuration."
         })
 
-    # in fact the flag is_new may be useless
-    site, created = Site.objects.update_or_create(
+    site = Site.objects.create(
         hostname=hostname, ftp_host=ftp_host,
         ftp_user=username, ftp_port=port
     )
@@ -94,6 +102,33 @@ def websites_connect(request):
 
     return redirect('pages_index', website_id=site.id)
 
+def websites_update_connect(request, website_id):
+    """
+    Update a website using the POST parameters.
+    Store hostname and password in the user session and open the page index of the site.
+    """
+    site = Site.objects.filter(id=website_id)
+
+    hostname = request.POST['hostname']
+    ftp_host = request.POST['ftp_host']
+    port = request.POST['port']
+    username = request.POST['username']
+    pwd = request.POST['pwd']
+    root_folder = request.POST['root']
+
+    if not FTPManager.test(ftp_host, port, username, pwd) or not testHTTP(hostname):
+        return redirect('websites_configure', website_id=site.get().id)
+
+    site.update(
+        hostname=hostname, ftp_host=ftp_host,
+        ftp_user=username, ftp_port=port,
+        root_folder=root_folder
+    )
+
+    request.session['site'] = site.get().id
+    request.session['pwd'] = pwd
+
+    return redirect('pages_index', website_id=site.get().id)
 
 def websites_configure(request, website_id):
     """
@@ -125,23 +160,24 @@ def pages_edit(request, website_id, page_id):
     page = site.page_set.get(id=page_id)
 
     pwd = request.session['pwd']
-    try:
-        file = FTPManager.download(site.ftp_host, site.ftp_port, site.ftp_user, pwd, site.root_folder, page.path)
-    except:
-        return redirect('pages_configure', website_id, page_id)
 
-    # parse the file as html
-    soup = BeautifulSoup(file, "html.parser")
+    file = FTPManager.download(site.ftp_host, site.ftp_port, site.ftp_user, pwd, "", page.path)
 
-    # gets all elements that match the selector
-    listEditableContent = []
-    if len(soup.select(page.selector)) > 0:
-        for tag in soup.select(page.selector):
-            listEditableContent.append(tag.prettify())
+    if file:
+        # parse the file as html
+        soup = BeautifulSoup(file, "html.parser")
+
+        # gets all elements that match the selector
+        listEditableContent = []
+        if len(soup.select(page.selector)) > 0:
+            for tag in soup.select(page.selector):
+                listEditableContent.append(tag.prettify())
+        else:
+            listEditableContent.append("Selector " + page.selector + " introuvable sur la page")
+
+        return render(request, 'pages/edit.html', {'site':site,'page':page, 'file':file, 'listEditableContent':listEditableContent})
     else:
-        listEditableContent.append("Selector " + page.selector + " introuvable sur la page")
-    
-    return render(request, 'pages/edit.html', {'site':site,'page':page, 'file':file, 'listEditableContent':listEditableContent})
+        return render(request, 'pages/configure.html', {'site':site, 'page':page, "message":"Page not found"})
 
 def pages_update(request, website_id, page_id):
     site = Site.objects.get(id=website_id)
@@ -175,18 +211,30 @@ def pages_update(request, website_id, page_id):
 
 def pages_add(request, website_id):
     site = Site.objects.get(id=website_id)
-    return render(request, 'pages/configure.html', {'site':site})
+    return render(request, 'pages/configure.html', {'site':site, 'is_new':True})
 
 def pages_configure(request, website_id, page_id):
     site = Site.objects.get(id=website_id)
     page = site.page_set.get(id=page_id)
-    return render(request, 'pages/configure.html', {'site':site, 'page':page})
+    return render(request, 'pages/configure.html', {'site':site, 'page':page, 'is_new':False})
 
-def pages_update_config(request, website_id):
+def pages_add_config(request, website_id):
     site = Site.objects.get(id=website_id)
     path = request.POST['path']
     selector = request.POST['selector']
-    page, created = Page.objects.update_or_create(
+
+    page = Page.objects.create(
+        site=site, path=path, selector=selector
+    )
+    return redirect('pages_index', website_id=site.id)
+
+def pages_update_config(request, website_id, page_id):
+    site = Site.objects.get(id=website_id)
+    page = site.page_set.filter(id=page_id)
+    path = request.POST['path']
+    selector = request.POST['selector']
+
+    page.update(
         site=site, path=path, selector=selector
     )
     return redirect('pages_index', website_id=site.id)
