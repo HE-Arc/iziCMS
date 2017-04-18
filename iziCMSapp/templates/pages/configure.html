@@ -4,8 +4,11 @@
     <h1>{% block title %}Page configuration{% endblock %}</h1>
 
     <p>{{ message }}</p>
-
-    <form class="form-horizontal" action="{% url 'pages_update_config' site.id %}" method="post">
+    {% if is_new %}
+        <form class="form-horizontal" action="{% url 'pages_add_config' site.id %}" method="post">
+    {% else %}
+        <form class="form-horizontal" action="{% url 'pages_update_config' site.id page.id %}" method="post">
+    {% endif %}
         {% csrf_token %}
         <div class="form-group">
             <label class="control-label col-sm-2" for="path">Path:</label>

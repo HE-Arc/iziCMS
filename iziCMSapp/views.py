@@ -175,19 +175,30 @@ def pages_update(request, website_id, page_id):
 
 def pages_add(request, website_id):
     site = Site.objects.get(id=website_id)
-    return render(request, 'pages/configure.html', {'site':site})
+    return render(request, 'pages/configure.html', {'site':site, 'is_new':True})
 
 def pages_configure(request, website_id, page_id):
     site = Site.objects.get(id=website_id)
-    page = Page.objects.get(id=page_id)
-    return render(request, 'pages/configure.html', {'site':site, 'page':page})
+    page = site.page_set.get(id=page_id)
+    return render(request, 'pages/configure.html', {'site':site, 'page':page, 'is_new':False})
 
-def pages_update_config(request, website_id):
+def pages_add_config(request, website_id):
     site = Site.objects.get(id=website_id)
     path = request.POST['path']
     selector = request.POST['selector']
 
-    page, created = Page.objects.update_or_create(
+    page = Page.objects.create(
+        site=site, path=path, selector=selector
+    )
+    return redirect('pages_index', website_id=site.id)
+
+def pages_update_config(request, website_id, page_id):
+    site = Site.objects.get(id=website_id)
+    page = site.page_set.filter(id=page_id)
+    path = request.POST['path']
+    selector = request.POST['selector']
+
+    page.update(
         site=site, path=path, selector=selector
     )
     return redirect('pages_index', website_id=site.id)
