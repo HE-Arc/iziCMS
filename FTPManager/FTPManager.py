@@ -3,7 +3,7 @@ import io
 
 def connect(host, port, user, password, directory):
     ftp = FTP()
-    ftp.connect(host, port)
+    ftp.connect(host, int(port))
     ftp.login(user = user, passwd = password)
     ftp.cwd(directory)
     return ftp
@@ -25,11 +25,9 @@ def upload(host, port, user, password, directory, filename, text):
     ftp.quit()
 
 
-def test(host, port, user, password):
+def test(host, port, user, password, directory = "/"):
     try:
-        ftp = FTP()
-        ftp.connect(host, int(port))
-        ftp.login(user = user, passwd = password)
+        ftp = connect(host, port, user, password, directory)
         ftp.voidcmd("NOOP") # do nothing but raise an error in case of failure
         ftp.quit()
         return True
