@@ -80,7 +80,7 @@ def websites_connect(request):
     username = request.POST['username']
     pwd = request.POST['pwd']
 
-    if not FTPManager.test(ftp_host, port, username, pwd):
+    if not FTPManager.test(ftp_host, port, username, pwd) or not testHTTP(hostname):
         return render(request, 'websites/configure.html', {
             'hostname': hostname,
             'ftp_host': ftp_host,
@@ -115,7 +115,7 @@ def websites_update_connect(request, website_id):
     pwd = request.POST['pwd']
     root_folder = request.POST['root']
 
-    if not FTPManager.test(ftp_host, port, username, pwd):
+    if not FTPManager.test(ftp_host, port, username, pwd) or not testHTTP(hostname):
         return redirect('websites_configure', website_id=site.get().id)
 
     site.update(
