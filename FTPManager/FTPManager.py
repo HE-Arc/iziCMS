@@ -23,5 +23,13 @@ def upload(host, port, user, password, directory, filename, text):
 
 
 def test(host, port, user, password):
-    # todo
-    return True
+    try:
+        ftp = FTP()
+        ftp.connect(host, port)
+        ftp.login(user = user, passwd = password)
+        ftp.voidcmd("NOOP") # do nothing but raise an error in case of failure
+        ftp.quit()
+        return True
+    except:
+        return False
+    
