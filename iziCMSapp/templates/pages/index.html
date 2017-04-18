@@ -21,13 +21,13 @@
                     {{ page.selector }}
                 </td>
                 <td>
-                    <a href="{% url 'pages_edit' site.id page.id %}"  type="button" class="btn btn-default btn-sm">
+                    <a href="{% url 'pages_edit' site.id page.id %}"  type="button" class="btn btn-default btn-sm" title="Edit page">
                         <span class="glyphicon glyphicon-pencil"></span>
                     </a>
-                    <a href="{% url 'pages_configure' site.id page.id %}"  type="button" class="btn btn-default btn-sm">
+                    <a href="{% url 'pages_configure' site.id page.id %}"  type="button" class="btn btn-default btn-sm" title="Configure">
                         <span class="glyphicon glyphicon-wrench"></span>
                     </a>
-                    <a href="http://{{ site.hostname }}{{ page.path }}" target="_blank" type="button" class="btn btn-default btn-sm">
+                    <a href="http://{{ site.hostname }}{{ page.path }}" target="_blank" type="button" class="btn btn-default btn-sm" title="Show page online">
                         <span class="glyphicon glyphicon-globe"></span>
                     </a>
                 </td>
