@@ -134,23 +134,24 @@ def pages_edit(request, website_id, page_id):
     page = site.page_set.get(id=page_id)
 
     pwd = request.session['pwd']
-    try:
-        file = FTPManager.download(site.ftp_host, site.ftp_port, site.ftp_user, pwd, site.root_folder, page.path)
-    except:
-        return redirect('pages_configure', website_id, page_id)
 
-    # parse the file as html
-    soup = BeautifulSoup(file, "html.parser")
+    file = FTPManager.download(site.ftp_host, site.ftp_port, site.ftp_user, pwd, "", page.path)
 
-    # gets all elements that match the selector
-    listEditableContent = []
-    if len(soup.select(page.selector)) > 0:
-        for tag in soup.select(page.selector):
-            listEditableContent.append(tag.prettify())
+    if file:
+        # parse the file as html
+        soup = BeautifulSoup(file, "html.parser")
+
+        # gets all elements that match the selector
+        listEditableContent = []
+        if len(soup.select(page.selector)) > 0:
+            for tag in soup.select(page.selector):
+                listEditableContent.append(tag.prettify())
+        else:
+            listEditableContent.append("Selector " + page.selector + " introuvable sur la page")
+
+        return render(request, 'pages/edit.html', {'site':site,'page':page, 'file':file, 'listEditableContent':listEditableContent})
     else:
-        listEditableContent.append("Selector " + page.selector + " introuvable sur la page")
-    
-    return render(request, 'pages/edit.html', {'site':site,'page':page, 'file':file, 'listEditableContent':listEditableContent})
+        return render(request, 'pages/configure.html', {'site':site, 'page':page, "message":"Page not found"})
 
 def pages_update(request, website_id, page_id):
     site = Site.objects.get(id=website_id)
@@ -163,6 +164,7 @@ def pages_update(request, website_id, page_id):
 
     # parse the entire file again (todo: possible DRY?)
     file = BeautifulSoup(file_content, "html.parser")
+
 
     # update all editable contents
     tags = file.select(page.selector)
@@ -184,18 +186,30 @@ def pages_update(request, website_id, page_id):
 
 def pages_add(request, website_id):
     site = Site.objects.get(id=website_id)
-    return render(request, 'pages/configure.html', {'site':site})
+    return render(request, 'pages/configure.html', {'site':site, 'is_new':True})
 
 def pages_configure(request, website_id, page_id):
     site = Site.objects.get(id=website_id)
     page = site.page_set.get(id=page_id)
-    return render(request, 'pages/configure.html', {'site':site, 'page':page})
+    return render(request, 'pages/configure.html', {'site':site, 'page':page, 'is_new':False})
 
-def pages_update_config(request, website_id):
+def pages_add_config(request, website_id):
     site = Site.objects.get(id=website_id)
     path = request.POST['path']
     selector = request.POST['selector']
-    page, created = Page.objects.update_or_create(
+
+    page = Page.objects.create(
+        site=site, path=path, selector=selector
+    )
+    return redirect('pages_index', website_id=site.id)
+
+def pages_update_config(request, website_id, page_id):
+    site = Site.objects.get(id=website_id)
+    page = site.page_set.filter(id=page_id)
+    path = request.POST['path']
+    selector = request.POST['selector']
+
+    page.update(
         site=site, path=path, selector=selector
     )
     return redirect('pages_index', website_id=site.id)

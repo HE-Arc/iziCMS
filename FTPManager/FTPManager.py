@@ -9,11 +9,14 @@ def connect(host, port, user, password, directory):
     return ftp
 
 def download(host, port, user, password, directory, filename):
-    ftp = connect(host, port, user, password, directory)
-    r = io.BytesIO()
-    text = ftp.retrbinary('RETR ' + filename, r.write)
-    ftp.quit()
-    return r.getvalue()
+    try:
+        ftp = connect(host, port, user, password, directory)
+        r = io.BytesIO()
+        text = ftp.retrbinary('RETR ' + filename, r.write)
+        ftp.quit()
+        return r.getvalue()
+    except:
+        return None
 
 def upload(host, port, user, password, directory, filename, text):
     ftp = connect(host, port, user, password, directory)
@@ -30,4 +33,3 @@ def test(host, port, user, password, directory = "/"):
         return True
     except:
         return False
-    
