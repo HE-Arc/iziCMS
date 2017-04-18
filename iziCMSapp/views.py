@@ -120,20 +120,24 @@ def pages_edit(request, website_id, page_id):
     page = site.page_set.get(id=page_id)
 
     pwd = request.session['pwd']
-    file = FTPManager.download(site.ftp_host, site.ftp_port, site.ftp_user, pwd, site.root_folder, page.path)
+    file = FTPManager.download(site.ftp_host, site.ftp_port, site.ftp_user, pwd, "", page.path)
 
-    # parse the file as html
-    soup = BeautifulSoup(file)
+    if file:
+        # parse the file as html
+        soup = BeautifulSoup(file)
 
-    # gets all elements that match the selector
-    listEditableContent = []
-    if len(soup.select(page.selector)) > 0:
-        for tag in soup.select(page.selector):
-            listEditableContent.append(tag.prettify())
+
+        # gets all elements that match the selector
+        listEditableContent = []
+        if len(soup.select(page.selector)) > 0:
+            for tag in soup.select(page.selector):
+                listEditableContent.append(tag.prettify())
+        else:
+            listEditableContent.append("Selector " + page.selector + " introuvable sur la page")
+
+        return render(request, 'pages/edit.html', {'site':site,'page':page, 'file':file, 'listEditableContent':listEditableContent})
     else:
-        listEditableContent.append("Selector " + page.selector + " introuvable sur la page")
-    
-    return render(request, 'pages/edit.html', {'site':site,'page':page, 'file':file, 'listEditableContent':listEditableContent})
+        return render(request, 'pages/configure.html', {'site':site, 'page':page, "message":"Page not found"})
 
 def pages_update(request, website_id, page_id):
     site = Site.objects.get(id=website_id)
@@ -146,6 +150,7 @@ def pages_update(request, website_id, page_id):
 
     # parse the entire file again (todo: possible DRY?)
     file = BeautifulSoup(file_content)
+
 
     # update all editable contents
     tags = file.select(page.selector)
@@ -173,13 +178,14 @@ def pages_add(request, website_id):
 
 def pages_configure(request, website_id, page_id):
     site = Site.objects.get(id=website_id)
-    page = site.page_set.get(id=page_id)
+    page = Page.objects.get(id=page_id)
     return render(request, 'pages/configure.html', {'site':site, 'page':page})
 
 def pages_update_config(request, website_id):
     site = Site.objects.get(id=website_id)
     path = request.POST['path']
     selector = request.POST['selector']
+
     page, created = Page.objects.update_or_create(
         site=site, path=path, selector=selector
     )
