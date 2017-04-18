@@ -60,8 +60,7 @@ def disconnect(request):
 
 def websites_connect(request):
     """
-    Create or update a website using the POST parameters.
-    The is_new hidden input in websites_configure tells what to do.
+    Create a website using the POST parameters.
     Store hostname and password in the user session and open the page index of the site.
     """
     hostname = request.POST['hostname']
@@ -69,7 +68,6 @@ def websites_connect(request):
     port = request.POST['port']
     username = request.POST['username']
     pwd = request.POST['pwd']
-    is_new = request.POST['is_new']
 
     if not FTPManager.test(ftp_host, port, username, pwd):
         return render(request, 'websites/configure.html', {
@@ -78,11 +76,11 @@ def websites_connect(request):
             'port': port,
             'username': username,
             'pwd': pwd,
+            'is_new': False,
             'message': "Unable to connect to your FTP server, please verify your configuration."
         })
 
-    # in fact the flag is_new may be useless
-    site, created = Site.objects.update_or_create(
+    site = Site.objects.create(
         hostname=hostname, ftp_host=ftp_host,
         ftp_user=username, ftp_port=port
     )
@@ -92,6 +90,41 @@ def websites_connect(request):
 
     return redirect('pages_index', website_id=site.id)
 
+def websites_update_connect(request, website_id):
+    """
+    Update a website using the POST parameters.
+    Store hostname and password in the user session and open the page index of the site.
+    """
+    site = Site.objects.filter(id=website_id)
+
+    hostname = request.POST['hostname']
+    ftp_host = request.POST['ftp_host']
+    port = request.POST['port']
+    username = request.POST['username']
+    pwd = request.POST['pwd']
+    root_folder = request.POST['root']
+
+    if not FTPManager.test(ftp_host, port, username, pwd):
+        return render(request, 'websites/configure.html', {
+            'hostname': hostname,
+            'ftp_host': ftp_host,
+            'port': port,
+            'username': username,
+            'pwd': pwd,
+            'is_new': False,
+            'message': "Unable to connect to your FTP server, please verify your configuration."
+        })
+
+    site.update(
+        hostname=hostname, ftp_host=ftp_host,
+        ftp_user=username, ftp_port=port,
+        root_folder=root_folder
+    )
+
+    request.session['site'] = site.get().id
+    request.session['pwd'] = pwd
+
+    return redirect('pages_index', website_id=site.get().id)
 
 def websites_configure(request, website_id):
     """

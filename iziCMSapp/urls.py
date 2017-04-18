@@ -11,6 +11,7 @@ urlpatterns = [
 
     url(r'^websites/(?P<website_id>[0-9]+)/configure', views.websites_configure, name='websites_configure'),
     url(r'^websites/(?P<website_id>[0-9]+)/delete', views.websites_delete, name='websites_delete'),
+    url(r'^websites/(?P<website_id>[0-9]+)/connect$', views.websites_update_connect, name='websites_update_connect'),
 
     url(r'^websites/(?P<website_id>[0-9]+)/pages/$', views.pages_index, name='pages_index'),
     url(r'^websites/(?P<website_id>[0-9]+)/pages/add$', views.pages_add, name='pages_add'),
