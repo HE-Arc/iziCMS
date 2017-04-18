@@ -3,18 +3,42 @@
 {% block content %}
     <h1>{% block title %}{{ site.hostname }}{% endblock %}</h1>
     <h3>Pages</h3>
-    <ul class="nav nav-pills nav-stacked">
-    {% for page in pages %}
-        <li>
-            <a href="{% url 'pages_edit' site.id page.id %}">{{ page.path }}</a>
-        </li>
-    {% endfor %}
-    </ul>
-
-    <br>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Path</th>
+                <th>Selector</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for page in pages %}
+            <tr>
+                <td>
+                    <a href="{% url 'pages_edit' site.id page.id %}">{{ page.path }}</a>
+                </td>
+                <td>
+                    {{ page.selector }}
+                </td>
+                <td>
+                    <a href="{% url 'pages_edit' site.id page.id %}"  type="button" class="btn btn-default btn-sm">
+                        <span class="glyphicon glyphicon-pencil"></span>
+                    </a>
+                    <a href="{% url 'pages_configure' site.id page.id %}"  type="button" class="btn btn-default btn-sm">
+                        <span class="glyphicon glyphicon-wrench"></span>
+                    </a>
+                    <a href="http://{{ site.hostname }}{{ page.path }}" target="_blank" type="button" class="btn btn-default btn-sm">
+                        <span class="glyphicon glyphicon-globe"></span>
+                    </a>
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
     <a href="{% url 'pages_add' site.id %}"  type="button" class="btn btn-default btn-sm">
       <span class="glyphicon glyphicon-plus"></span> Add page
     </a>
+    <br>
     <h3>Bookmarklet</h3>
     <p>
         You can use our <a target="_blank" href="https://en.wikipedia.org/wiki/Bookmarklet">bookmarklet</a> feature to simplify page edition.
