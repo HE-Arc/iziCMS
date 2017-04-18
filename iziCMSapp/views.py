@@ -2,6 +2,7 @@ from django.shortcuts import redirect, render
 
 from FTPManager import FTPManager
 import logging
+from django.contrib import messages
 
 from .models import Site, Page
 from bs4 import BeautifulSoup
@@ -18,6 +19,7 @@ def home(request):
     The form is sent to the connect_hostname view method.
     """
     if 'site' in request.session:
+        messages.info(request, 'You are connected, click your hostname in the header to disconnect')
         return redirect('pages_index', website_id=request.session['site'])
     return render(request, 'home.html')
 
@@ -37,17 +39,17 @@ def connect_hostname(request):
             request.session['pwd'] = pwd
             return redirect('pages_index', website_id=site.id)
         else:
+            messages.error(request, "Unable to connect to your FTP server, please verify your configuration.")
             return render(request, 'websites/configure.html', {
                 'site':site,
-                'is_new': False,
-                'message': "Unable to connect to your FTP server, please verify your configuration."
+                'is_new': False
             })
     except Site.DoesNotExist:
+        messages.warning(request, "We don't know your website yet, please register it using your FTP crendentials.")
         return render(request, 'websites/configure.html', {
                 'hostname':hostname,
                 'pwd':pwd,
-                'is_new':True,
-                'message':"We don't know your website yet, please register it using your FTP crendentials."
+                'is_new':True
             })
 
 def disconnect(request):
