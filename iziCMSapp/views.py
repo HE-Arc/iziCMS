@@ -129,7 +129,7 @@ def pages_edit(request, website_id, page_id):
         return redirect('pages_configure', website_id, page_id)
 
     # parse the file as html
-    soup = BeautifulSoup(file)
+    soup = BeautifulSoup(file, "html.parser")
 
     # gets all elements that match the selector
     listEditableContent = []
@@ -151,17 +151,15 @@ def pages_update(request, website_id, page_id):
     file_content = request.POST['fileContent']
 
     # parse the entire file again (todo: possible DRY?)
-    file = BeautifulSoup(file_content)
+    file = BeautifulSoup(file_content, "html.parser")
 
     # update all editable contents
     tags = file.select(page.selector)
-    for i in range(int(request.POST['numEditableContent'])):
-        print("i" + str(i))
+    for i,content in enumerate(request.POST.getlist('editContent')):
         # the new content of the selected element
-        edit_content = request.POST['editContent'+str(i)]
-        print("editContent " + edit_content)
+        print("editContent " + content)
         # parse the new content
-        new_content = BeautifulSoup(edit_content)
+        new_content = BeautifulSoup(content, "html.parser")
 
         # retrieve the selected element and replace its content by the new_content
         elem = tags[i]
