@@ -116,15 +116,7 @@ def websites_update_connect(request, website_id):
     root_folder = request.POST['root']
 
     if not FTPManager.test(ftp_host, port, username, pwd):
-        return render(request, 'websites/configure.html', {
-            'hostname': hostname,
-            'ftp_host': ftp_host,
-            'port': port,
-            'username': username,
-            'pwd': pwd,
-            'is_new': False,
-            'message': "Unable to connect to your FTP server, please verify your configuration."
-        })
+        return redirect('websites_configure', website_id=site.get().id)
 
     site.update(
         hostname=hostname, ftp_host=ftp_host,
