@@ -26,10 +26,14 @@
 
         <div class="form-group">
             <div class="col-sm-offset-2 col-sm-10">
-                <button type="submit" class="btn btn-default">Save</button>
+                <button type="submit" class="btn btn-primary">
+                    <span class="glyphicon glyphicon-ok"></span> Save
+                </button>
 
                 {% if not is_new %}
-                    <a href="{% url 'pages_delete' site.id page.id %}" class="btn btn-danger">Delete</a>
+                    <a href="{% url 'pages_delete' site.id page.id %}" class="btn btn-danger">
+                      <span class="glyphicon glyphicon-trash"></span> Delete
+                    </a>
                 {% endif %}
             </div>
 

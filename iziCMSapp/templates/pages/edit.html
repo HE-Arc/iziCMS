@@ -26,8 +26,13 @@
         <input type="hidden" name="numEditableContent" value="{{ listEditableContent|length }}">
 
         <br>
+
+        <a href="{% url 'pages_index' site.id %}" class="btn btn-default">
+          <span class="glyphicon glyphicon-chevron-left"></span> Back
+        </a>
+
         <button type="submit" class="btn btn-primary">
-          <span class="glyphicon glyphicon-floppy-save"></span> Save
+          <span class="glyphicon glyphicon-cloud-upload"></span> Save
         </button>
     </form>
 {% endblock %}
