@@ -12,6 +12,8 @@ def download(host, port, user, password, directory, filename):
     try:
         ftp = connect(host, port, user, password, directory)
         r = io.BytesIO()
+        if filename.startswith('/'):
+            filename = filename[1:]
         text = ftp.retrbinary('RETR ' + filename, r.write)
         ftp.quit()
         return r.getvalue()

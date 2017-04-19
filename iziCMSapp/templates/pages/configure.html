@@ -3,7 +3,6 @@
 {% block content %}
     <h1>{% block title %}Page configuration{% endblock %}</h1>
 
-    <p>{{ message }}</p>
     {% if is_new %}
         <form class="form-horizontal" action="{% url 'pages_add_config' site.id %}" method="post">
     {% else %}
@@ -19,7 +18,7 @@
         <div class="form-group">
             <label class="control-label col-sm-2" for="path">Selector:</label>
             <div class="col-sm-10">
-                <input type="text" class="form-control" id="selector" name="selector" value="{{ page.selector }}">
+                <input type="text" class="form-control" id="selector" name="selector" value="{{ page.selector|default:'body' }}">
             </div>
         </div>
         <input type="hidden" name="is_new" value="{{ is_new|default:"True" }}">

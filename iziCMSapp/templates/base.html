@@ -31,7 +31,7 @@
         <div class="navbar-header">
           <a class="navbar-brand" href="/">iziCMS</a>
         </div>
-        {% if site %}
+        {% if site.id %}
         <div id="navbar">
           <ul class="nav navbar-nav navbar-right">
             <li class="dropdown">
@@ -54,8 +54,9 @@
     <div class="container">
         {% if messages %}
             {% for message in messages %}
-                <div class="alert alert-{% if 'error' in message.tags %}danger{% else %}{{ message.tags }}{% endif %}">
-                    {{ message }}
+                <div class="alert alert-dismissible alert-{% if 'error' in message.tags %}danger{% else %}{{ message.tags }}{% endif %}" role="alert">
+                  <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                  {{ message }}
                 </div>
             {% endfor %}
         {% endif %}

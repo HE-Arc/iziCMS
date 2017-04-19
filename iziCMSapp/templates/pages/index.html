@@ -15,7 +15,7 @@
         {% for page in pages %}
             <tr>
                 <td>
-                    <a href="{% url 'pages_edit' site.id page.id %}">{{ page.path }}</a>
+                    <span class="text-muted">{{ site.root_folder }}</span> <strong>{{ page.path }}</strong>
                 </td>
                 <td>
                     {{ page.selector }}
