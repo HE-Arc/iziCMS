@@ -5,9 +5,10 @@ import logging
 import http.client
 from django.contrib import messages
 import http.client
-
+from django.db import IntegrityError
 from .models import Site, Page
 from bs4 import BeautifulSoup
+
 
 logger = logging.getLogger(__name__)
 
@@ -97,16 +98,19 @@ def websites_create(request):
     if not FTPManager.test(ftp_host, ftp_port, ftp_user, pwd, root_folder):
         messages.warning(request, "Unable to connect to your FTP server, please verify your configuration.")
     else:
-        site = Site.objects.create(
-            hostname=hostname, ftp_host=ftp_host, ftp_port=ftp_port,
-            root_folder=root_folder, ftp_user=ftp_user
-        )
+        try:
+            site = Site.objects.create(
+                hostname=hostname, ftp_host=ftp_host, ftp_port=ftp_port,
+                root_folder=root_folder, ftp_user=ftp_user
+            )
 
-        request.session['site'] = site.id
-        request.session['pwd'] = pwd
+            request.session['site'] = site.id
+            request.session['pwd'] = pwd
 
-        messages.success(request, 'Website successfully created')
-        return redirect('pages_index', website_id=site.id)
+            messages.success(request, 'Website successfully created')
+            return redirect('pages_index', website_id=site.id)
+        except IntegrityError:
+            messages.warning(request, "Hostname '{}' already exist".format(hostname))
 
     return render(request, 'websites/configure.html', {
         'site': request.POST.dict(), 'pwd': pwd
@@ -258,11 +262,17 @@ def pages_add_config(request, website_id):
     path = request.POST['path']
     selector = request.POST['selector']
 
-    page = Page.objects.create(
-        site=site, path=path, selector=selector
-    )
-    messages.success(request, "Page successfully added")
-    return redirect('pages_index', website_id=site.id)
+    try:
+        page = Page.objects.create(
+            site=site, path=path, selector=selector
+        )
+        messages.success(request, "Page successfully added")
+        return redirect('pages_index', website_id=site.id)
+    except IntegrityError:
+        messages.warning(request, "Page {} already exist with selector {}".format(path, selector))
+        #return redirect('pages_add', website_id=website_id)
+        return render(request, 'pages/configure.html', {'site':site, 'page':{'site':site, 'path':path, 'selector':selector}, 'is_new':True})
+
 
 
 def pages_update_config(request, website_id, page_id):
