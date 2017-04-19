@@ -170,7 +170,7 @@ def pages_edit(request, website_id, page_id):
         # gets all elements that match the selector
         tags = soup.select(page.selector)
         if len(tags) > 0:
-            listEditableContent = [tag.prettify() for tag in tags]
+            listEditableContent = [tag.decode_contents(formatter="html") for tag in tags]
             return render(request, 'pages/edit.html',
                           {'site': site, 'page': page, 'file': file, 'listEditableContent': listEditableContent})
 
