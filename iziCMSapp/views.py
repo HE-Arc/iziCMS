@@ -11,14 +11,19 @@ from bs4 import BeautifulSoup
 
 logger = logging.getLogger(__name__)
 
+###
+### TOOLS
+###
 
 def testHTTP(hostname):
+    """Perform an HTTP request to hostname, return if it succeed or not"""
     try:
         c = http.client.HTTPConnection(hostname)
         c.request("HEAD", '')
         return True
     except:
         return False
+
 
 ###
 ### HOME
@@ -33,6 +38,7 @@ def home(request):
         messages.info(request, 'You are connected, click your hostname in the header to disconnect')
         return redirect('pages_index', website_id=request.session['site'])
     return render(request, 'home.html')
+
 
 def connect_hostname(request):
     """
@@ -60,19 +66,24 @@ def connect_hostname(request):
                 'pwd':pwd
             })
 
+
 def disconnect(request):
+    """Clear session and redirect to the homepage"""
     request.session.clear()
     messages.info(request, 'You are disconnected')
     return redirect('home')
+
 
 ###
 ### WEBSITES
 ###
 
+#todo: refactor these two methods
+
 def websites_create(request):
     """
     Create a website using the POST parameters.
-    Store hostname and password in the user session and open the page index of the site.
+    Store hostname and password in the user session and open the pages index of the site.
     """
     hostname = request.POST['hostname']
     ftp_host = request.POST['ftp_host']
@@ -81,28 +92,31 @@ def websites_create(request):
     ftp_user = request.POST['ftp_user']
     pwd = request.POST['pwd']
 
-    if not FTPManager.test(ftp_host, ftp_port, ftp_user, pwd, root_folder) or not testHTTP(hostname):
+    if not testHTTP(hostname):
+        messages.warning(request, "Hostname '{}' unreachable".format(hostname))
+    if not FTPManager.test(ftp_host, ftp_port, ftp_user, pwd, root_folder):
         messages.warning(request, "Unable to connect to your FTP server, please verify your configuration.")
-        return render(request, 'websites/configure.html', {
-            'site': request.POST.dict(), 'pwd':pwd
-        })
+    else:
+        site = Site.objects.create(
+            hostname=hostname, ftp_host=ftp_host, ftp_port=ftp_port,
+            root_folder=root_folder, ftp_user=ftp_user
+        )
 
-    site = Site.objects.create(
-        hostname=hostname, ftp_host=ftp_host, ftp_port=ftp_port,
-        root_folder=root_folder, ftp_user=ftp_user
-    )
+        request.session['site'] = site.id
+        request.session['pwd'] = pwd
 
-    request.session['site'] = site.id
-    request.session['pwd'] = pwd
+        messages.success(request, 'Website successfully created')
+        return redirect('pages_index', website_id=site.id)
 
-    messages.success(request, 'Website successfully created')
-    return redirect('pages_index', website_id=site.id)
+    return render(request, 'websites/configure.html', {
+        'site': request.POST.dict(), 'pwd': pwd
+    })
 
 
 def websites_update(request, website_id):
     """
     Update a website using the POST parameters.
-    Store hostname and password in the user session and open the page index of the site.
+    Store hostname and password in the user session and open the pages index of the site.
     """
     site = Site.objects.filter(id=website_id)
 
@@ -129,6 +143,7 @@ def websites_update(request, website_id):
     messages.success(request, 'Website successfully updated')
     return redirect('pages_index', website_id=site.get().id)
 
+
 def websites_configure(request, website_id):
     """
     Show the form to configure an existing or new website.
@@ -138,16 +153,20 @@ def websites_configure(request, website_id):
         'site': site
     })
 
+
 def websites_delete(request, website_id):
+    """Delete the website and disconnect"""
     Site.objects.get(id=website_id).delete()
     messages.success(request, 'Website successfully deleted')
     return redirect('disconnect')
+
 
 ###
 ### PAGES
 ###
 
 def pages_index(request, website_id):
+    """Show the page list of the website"""
     site = Site.objects.get(id=website_id)
 
     return render(request, 'pages/index.html', {
@@ -155,12 +174,15 @@ def pages_index(request, website_id):
             'pages':site.page_set.all()
         })
 
+
 def pages_edit(request, website_id, page_id):
+    """Show the page edition form. The form is sent to pages_update"""
     site = Site.objects.get(id=website_id)
     page = site.page_set.get(id=page_id)
 
     pwd = request.session['pwd']
 
+    # None if download fails
     file = FTPManager.download(site.ftp_host, site.ftp_port, site.ftp_user, pwd, site.root_folder, page.path)
 
     if file:
@@ -170,7 +192,9 @@ def pages_edit(request, website_id, page_id):
         # gets all elements that match the selector
         tags = soup.select(page.selector)
         if len(tags) > 0:
+            # get the innerHTML string of each matched element and add it to the list
             listEditableContent = [tag.decode_contents(formatter="html") for tag in tags]
+            # render the edition template
             return render(request, 'pages/edit.html',
                           {'site': site, 'page': page, 'file': file, 'listEditableContent': listEditableContent})
 
@@ -181,23 +205,25 @@ def pages_edit(request, website_id, page_id):
 
     return render(request, 'pages/configure.html', {'site':site, 'page':page})
 
+
 def pages_update(request, website_id, page_id):
+    """Recreate a page using the edited elements and upload it to the FTP server"""
     site = Site.objects.get(id=website_id)
     page = site.page_set.get(id=page_id)
 
     pwd = request.session['pwd']
 
     # the file content has not changed, but we need it
+    # maybe it's smarter to redownload it, or to store it in the session...
     file_content = request.POST['fileContent']
 
-    # parse the entire file again (todo: possible DRY?)
+    # parse the entire file again
     file = BeautifulSoup(file_content, "html.parser")
 
     # update all editable contents
     tags = file.select(page.selector)
+    # iterate through each textarea content
     for i,content in enumerate(request.POST.getlist('editContent')):
-        # the new content of the selected element
-        print("editContent " + content)
         # parse the new content
         new_content = BeautifulSoup(content, "html.parser")
 
@@ -212,16 +238,22 @@ def pages_update(request, website_id, page_id):
     messages.success(request, 'Page successfully edited !')
     return redirect('pages_index', website_id=site.id)
 
+
 def pages_add(request, website_id):
+    """Show the form to add a page"""
     site = Site.objects.get(id=website_id)
     return render(request, 'pages/configure.html', {'site':site, 'is_new':True})
 
+
 def pages_configure(request, website_id, page_id):
+    """Show the form to configure an existing page, it's the same as for pages_add, but we give the template a page"""
     site = Site.objects.get(id=website_id)
     page = site.page_set.get(id=page_id)
     return render(request, 'pages/configure.html', {'site':site, 'page':page, 'is_new':False})
 
+
 def pages_add_config(request, website_id):
+    """Called by the template pages/configure to add the page from the form"""
     site = Site.objects.get(id=website_id)
     path = request.POST['path']
     selector = request.POST['selector']
@@ -232,7 +264,9 @@ def pages_add_config(request, website_id):
     messages.success(request, "Page successfully added")
     return redirect('pages_index', website_id=site.id)
 
+
 def pages_update_config(request, website_id, page_id):
+    """Also called by the template pages/configure. Update the configuration of the page"""
     site = Site.objects.get(id=website_id)
     page = site.page_set.filter(id=page_id)
     path = request.POST['path']
@@ -243,12 +277,15 @@ def pages_update_config(request, website_id, page_id):
     )
     return redirect('pages_index', website_id=site.id)
 
+
 def pages_delete(request, website_id, page_id):
+    """Deletes the page and redirect to the index"""
     site = Site.objects.get(id=website_id)
     page = site.page_set.get(id=page_id)
     page.delete()
     messages.success(request, 'Page successfully deleted !')
     return redirect('pages_index', website_id=site.id)
+
 
 ###
 ### OTHER
@@ -264,7 +301,6 @@ def izi_edit(request, hostname, path):
         return render(request, 'websites/configure.html', {
             'site':{'hostname': hostname}, 'is_new':True
         })
-
 
     # try to find index.html if the path is a diretory
     if path.endswith('/'):
