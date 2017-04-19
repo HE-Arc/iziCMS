@@ -23,6 +23,8 @@ def download(host, port, user, password, directory, filename):
 def upload(host, port, user, password, directory, filename, text):
     ftp = connect(host, port, user, password, directory)
     f = io.BytesIO(text.encode("utf-8"))
+    if filename.startswith('/'):
+        filename = filename[1:]
     ftp.storlines("STOR " + filename, f)
     ftp.quit()
 
