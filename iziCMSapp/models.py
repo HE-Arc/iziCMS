@@ -21,7 +21,7 @@ class Page(models.Model):
     selector = models.CharField(max_length=255, default="body")
 
     class Meta:
-        unique_together = ('site', 'path')
+        unique_together = ('site', 'path', 'selector')
 
     def __str__(self):
         return self.path
