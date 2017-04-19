@@ -15,6 +15,7 @@
             <div class="col-sm-10">
                 <input type="text" class="form-control" id="hostname" name="hostname" placeholder="www.example.com" value="{{ site.hostname }}">
             </div>
+            <p class="help-block col-sm-10 col-sm-offset-2">The domain name of your static website, i.e. your website's URL, without slashes and without http://.</p>
         </div>
         <div class="form-group">
             <label class="control-label col-sm-2" for="ftp_host">FTP Host:</label>
@@ -25,24 +26,28 @@
             <div class="col-sm-3">
                 <input type="number" class="form-control" id="ftp_port" name="ftp_port" value="{{ site.ftp_port|default:"21" }}">
             </div>
+            <p class="help-block col-sm-10 col-sm-offset-2">The address of the FTP server hosting your website.</p>
         </div>
         <div class="form-group">
             <label class="control-label col-sm-2" for="root_folder">Root Folder:</label>
             <div class="col-sm-10">
                 <input type="text" class="form-control" id="root_folder" name="root_folder" value="{{ site.root_folder|default:"/" }}">
             </div>
+            <p class="help-block col-sm-10 col-sm-offset-2">The path from your FTP server root to your website root. Should start and end with a slash.<br>If your website is in the root-directory of your FTP server, leave '/'</p>
         </div>
         <div class="form-group">
             <label class="control-label col-sm-2" for="ftp_user">Username:</label>
             <div class="col-sm-10">
                 <input type="text" class="form-control" id="ftp_user" name="ftp_user" placeholder="FTP username" value="{{ site.ftp_user }}">
             </div>
+            <p class="help-block col-sm-10 col-sm-offset-2">Your FTP username</p>
         </div>
         <div class="form-group">
             <label class="control-label col-sm-2" for="pwd">Password:</label>
             <div class="col-sm-10">
                 <input type="password" class="form-control" id="pwd" name="pwd" placeholder="FTP password" value="{{ pwd }}">
             </div>
+            <p class="help-block col-sm-10 col-sm-offset-2">Your FTP password, it will be stored in your session</p>
         </div>
         <input type="hidden" name="is_new" value="{{ is_new|default:"True" }}">
         <div class="form-group">

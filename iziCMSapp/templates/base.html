@@ -18,9 +18,6 @@
       <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
     <![endif]-->
 
-    <!-- global css -->
-    <link rel="stylesheet" type="text/css" href="{% static 'style.css' %}" />
-
     <!-- extra css -->
     {% block css %}{% endblock %}
 </head>
@@ -62,6 +59,7 @@
         {% endif %}
 
         {% block content %}{% endblock %}
+    <br>
     </div>
 
     <!-- extra js -->
