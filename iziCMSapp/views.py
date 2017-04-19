@@ -94,7 +94,7 @@ def websites_create(request):
 
     if not testHTTP(hostname):
         messages.warning(request, "Hostname '{}' unreachable".format(hostname))
-    if not FTPManager.test(ftp_host, ftp_port, ftp_user, pwd, root_folder):
+    elif not FTPManager.test(ftp_host, ftp_port, ftp_user, pwd, root_folder):
         messages.warning(request, "Unable to connect to your FTP server, please verify your configuration.")
     else:
         site = Site.objects.create(
