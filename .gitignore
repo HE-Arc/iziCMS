@@ -92,3 +92,6 @@ ENV/
 
 # pyCharm
 .idea/
+
+# visual studio code
+.vs/

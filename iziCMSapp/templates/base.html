@@ -31,18 +31,18 @@
         <div class="navbar-header">
           <a class="navbar-brand" href="/">iziCMS</a>
         </div>
-        {% if site %}
+        {% if site.id %}
         <div id="navbar">
           <ul class="nav navbar-nav navbar-right">
-              <li class="dropdown">
+            <li class="dropdown">
               <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
                   {{ site.hostname }}
                   <span class="caret"></span>
               </a>
               <ul class="dropdown-menu">
-                <li><a href="#">Pages</a></li>
+                <li><a href="{% url 'pages_index' site.id %}">Pages</a></li>
                 <li><a href="{% url 'disconnect' %}">Disconnect</a></li>
-                <li><a href="#">Edit</a></li>
+                <li><a href="{% url 'websites_configure' site.id %}">Configure</a></li>
               </ul>
             </li>
           </ul>
@@ -52,6 +52,15 @@
       </div>
     </nav>
     <div class="container">
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-dismissible alert-{% if 'error' in message.tags %}danger{% else %}{{ message.tags }}{% endif %}" role="alert">
+                  <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                  {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+
         {% block content %}{% endblock %}
     </div>
 

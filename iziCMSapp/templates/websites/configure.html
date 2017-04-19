@@ -3,36 +3,39 @@
 {% block content %}
     <h1>{% block title %}Configure your website{% endblock %}</h1>
 
-    <p>{{ message }}</p>
+    {% if site.id %}
+        <form class="form-horizontal" action="{% url 'websites_update' site.id %}" method="post">
+    {% else %}
+        <form class="form-horizontal" action="{% url 'websites_create' %}" method="post">
+    {% endif %}
 
-    <form class="form-horizontal" action="{% url 'websites_connect' %}" method="post">
         {% csrf_token %}
         <div class="form-group">
             <label class="control-label col-sm-2" for="hostname">Hostname:</label>
             <div class="col-sm-10">
-                <input type="text" class="form-control" id="hostname" name="hostname" placeholder="www.example.com" value="{{ hostname }}">
+                <input type="text" class="form-control" id="hostname" name="hostname" placeholder="www.example.com" value="{{ site.hostname }}">
             </div>
         </div>
         <div class="form-group">
             <label class="control-label col-sm-2" for="ftp_host">FTP Host:</label>
             <div class="col-sm-6">
-                <input type="text" class="form-control" id="ftp_host" name="ftp_host" placeholder="ftp.example.com" value="{{ ftp_host }}">
+                <input type="text" class="form-control" id="ftp_host" name="ftp_host" placeholder="ftp.example.com" value="{{ site.ftp_host }}">
             </div>
-            <label class="control-label col-sm-1" for="port">Port:</label>
+            <label class="control-label col-sm-1" for="ftp_port">Port:</label>
             <div class="col-sm-3">
-                <input type="number" class="form-control" id="port" name="port" value="{{ port|default:"21" }}">
+                <input type="number" class="form-control" id="ftp_port" name="ftp_port" value="{{ site.ftp_port|default:"21" }}">
             </div>
         </div>
         <div class="form-group">
-            <label class="control-label col-sm-2" for="root">Root Folder:</label>
+            <label class="control-label col-sm-2" for="root_folder">Root Folder:</label>
             <div class="col-sm-10">
-                <input type="text" class="form-control" id="root" name="root" value="{{ root|default:"/" }}">
+                <input type="text" class="form-control" id="root_folder" name="root_folder" value="{{ site.root_folder|default:"/" }}">
             </div>
         </div>
         <div class="form-group">
-            <label class="control-label col-sm-2" for="username">Username:</label>
+            <label class="control-label col-sm-2" for="ftp_user">Username:</label>
             <div class="col-sm-10">
-                <input type="text" class="form-control" id="username" name="username" placeholder="FTP username" value="{{ username }}">
+                <input type="text" class="form-control" id="ftp_user" name="ftp_user" placeholder="FTP username" value="{{ site.ftp_user }}">
             </div>
         </div>
         <div class="form-group">
@@ -44,13 +47,19 @@
         <input type="hidden" name="is_new" value="{{ is_new|default:"True" }}">
         <div class="form-group">
             <div class="col-sm-offset-2 col-sm-10">
-                <button type="submit" class="btn btn-default">
+                <button type="submit" class="btn btn-primary">
+                    <span class="glyphicon glyphicon-ok"></span>
                     {% if is_new %}
                         Create connection
                     {% else %}
                         Update connection
                     {% endif %}
                 </button>
+                {% if site.id %}
+                    <a href="{% url 'websites_delete' site.id %}" class="btn btn-danger">
+                      <span class="glyphicon glyphicon-trash"></span> Delete
+                    </a>
+                {% endif %}
             </div>
         </div>
     </form>
