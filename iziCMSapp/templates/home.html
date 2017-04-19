@@ -1,34 +1,39 @@
 {% extends "base.html" %}
 
 {% block content %}
-    <h1>{% block title %}Connect to your website{% endblock %}</h1>
+    <div class="jumbotron">
+        <h1>{% block title %}Welcome to iziCMS{% endblock %}</h1>
 
-    <form class="form-horizontal" action="{% url 'connect_hostname' %}" method="post">
-        {% csrf_token %}
-        <div class="form-group">
-            <label class="control-label col-sm-2" for="hostname">Hostname:</label>
-            <div class="col-sm-10">
-                <input type="text" class="form-control" id="hostname" name="hostname" placeholder="www.example.com" autofocus>
-            </div>
-        </div>
-        <div class="form-group">
-            <label class="control-label col-sm-2" for="pwd">FTP Password:</label>
-            <div class="col-sm-10">
-                <input type="password" class="form-control" id="pwd" name="pwd">
-            </div>
-        </div>
-        <div class="form-group">
-            <div class="col-sm-offset-2 col-sm-10">
-                <button type="submit" class="btn btn-primary">Connect</button>
-            </div>
-        </div>
+        <p>Simplify static web pages edition with the lightest CMS in the word.<br>
+            Get started by connecting to your website :</p>
 
-        <div class="form-group">
-            <div class="col-sm-offset-2 col-sm-10">
-                <button type="submit" class="btn btn-default">New connection</button>
+        <form class="form-horizontal" action="{% url 'connect_hostname' %}" method="post">
+            {% csrf_token %}
+            <div class="form-group">
+                <label class="control-label col-sm-2" for="hostname">Hostname:</label>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" id="hostname" name="hostname" placeholder="www.example.com" autofocus>
+                </div>
             </div>
-        </div>
-    </form>
+            <div class="form-group">
+                <label class="control-label col-sm-2" for="pwd">FTP Password:</label>
+                <div class="col-sm-10">
+                    <input type="password" class="form-control" id="pwd" name="pwd">
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-offset-2 col-sm-10">
+                    <button type="submit" class="btn btn-primary">Connect</button>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <div class="col-sm-offset-2 col-sm-10">
+                    <button type="submit" class="btn btn-default">New connection</button>
+                </div>
+            </div>
+        </form>
+    </div>
 
     <h2>FAQ</h2>
     <ul>
