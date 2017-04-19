@@ -312,6 +312,9 @@ def izi_edit(request, hostname, path):
             'site':{'hostname': hostname}, 'is_new':True
         })
 
+    # only necessary in prod because 'host/path' is rewrite as 'host/path'
+    if not path.startswith('/'):
+        path = '/'+path
     # try to find index.html if the path is a diretory
     if path.endswith('/'):
         path += 'index.html'

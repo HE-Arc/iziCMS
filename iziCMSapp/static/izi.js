@@ -3,5 +3,5 @@
 */
 function izi(){
     // pour l'instant, simple redirection sur iziCMS
-    window.location = "http://127.0.0.1:8000/izi_edit/" + location.hostname + "/" + location.pathname
+    window.location = "https://izicms.srvz-webapp.he-arc.ch/izi_edit/" + location.hostname + "/" + location.pathname
 }
