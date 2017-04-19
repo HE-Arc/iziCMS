@@ -46,8 +46,8 @@ def connect_hostname(request):
     and password in session and redirect to pages_index
     Else, show websites_configure view.
     """
-    hostname = request.POST['hostname']
-    pwd = request.POST['pwd']
+    hostname = request.POST.get('hostname','')
+    pwd = request.POST.get('pwd','')
 
     try:
         site = Site.objects.get(hostname=hostname) # exception raised here if the site is unknown

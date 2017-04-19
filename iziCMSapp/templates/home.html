@@ -19,8 +19,56 @@
         </div>
         <div class="form-group">
             <div class="col-sm-offset-2 col-sm-10">
-                <button type="submit" class="btn btn-default">Connect</button>
+                <button type="submit" class="btn btn-primary">Connect</button>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <div class="col-sm-offset-2 col-sm-10">
+                <button type="submit" class="btn btn-default">New connection</button>
             </div>
         </div>
     </form>
+
+    <h2>FAQ</h2>
+    <ul>
+        <li>
+            <p><i>What is iziCMS ?</i><br>
+                iziCMS is a micro Content Management System that lets you edit existing static web pages.</p>
+        </li>
+        <li>
+            <p><i>How do I install it ?</i><br>
+            It doesn't require any installation, everything is done from this platform.</p>
+        </li>
+        <li>
+            <p><i>Can I use iziCMS for any website ?</i><br>
+            No, you can only edit static web-pages (.html). You cannot combine iziCMS and some other CMS or framework.</p>
+        </li>
+        <li>
+            <p><i>How does it work ?</i><br>
+            iziCMS use your FTP configuration to download the pages you want to edit.<br>
+                You can select and edit particular elements of the page and iziCMS will upload the result to your website.</p>
+        </li>
+        <li>
+            <p><i>Can I undo some modification I did with iziCMS ?</i><br>
+            No, iziCMS doesn't provide any history system for now.<br>
+                We recommand you to save your files before to use iziCMS, in case something bad happens.</p>
+        </li>
+        <li>
+            <p><i>Can I add a page to my website ?</i><br>
+            No, iziCMS can only edit files that already exists.</p>
+        </li>
+        <li>
+            <p><i>Do you store my password in your database ?</i><br>
+            No, your FTP password is stored in your HTTP session the first time you connect to your website.</p>
+        </li>
+        <li>
+            <p><i>I don't want to give you my FTP password</i><br>
+            OK. We can not force you to trust us.</p>
+        </li>
+        <li>
+            <p><i>Is the communication secure ?</i><br>
+            Yes, note that iziCMS is under the HTTPS protocol, which means that the communication from you to us is encrypted.</p>
+        </li>
+    </ul>
 {% endblock %}
