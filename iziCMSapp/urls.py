@@ -23,5 +23,5 @@ urlpatterns = [
     url(r'^websites/(?P<website_id>[0-9]+)/pages/(?P<page_id>[0-9]+)/delete', views.pages_delete, name='pages_delete'),
     url(r'^websites/(?P<website_id>[0-9]+)/pages/(?P<page_id>[0-9]+)/update_config$', views.pages_update_config, name='pages_update_config'),
 
-    url(r'^izi_edit/(?P<hostname>(\w|\.)+)/(?P<path>.+)$', views.izi_edit, name='izi_edit'), # (\w|\.)+ lettres ou .
+    url(r'^izi_edit/(?P<hostname>[^/]+)(?P<path>.+)$', views.izi_edit, name='izi_edit'), # (\w|\.)+ lettres ou .
 ]
