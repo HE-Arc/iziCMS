@@ -4,7 +4,6 @@ from FTPManager import FTPManager
 import logging
 import http.client
 from django.contrib import messages
-import http.client
 from django.db import IntegrityError
 from .models import Site, Page
 from bs4 import BeautifulSoup
@@ -61,7 +60,7 @@ def connect_hostname(request):
             messages.error(request, "Unable to connect to your FTP server, please verify your configuration.")
             return redirect('websites_configure', site.id)
     except Site.DoesNotExist:
-        messages.warning(request, "We don't know your website yet, please register it using your FTP crendentials.")
+        messages.warning(request, "We don't know your website yet, please register it using your FTP credentials.")
         return render(request, 'websites/configure.html', {
                 'site':{'hostname':hostname},
                 'pwd':pwd
@@ -191,7 +190,7 @@ def pages_edit(request, website_id, page_id):
 
     if file:
         # parse the file as html
-        soup = BeautifulSoup(file, "html.parser")
+        soup = BeautifulSoup(file, "html5")
 
         # gets all elements that match the selector
         tags = soup.select(page.selector)
@@ -222,14 +221,14 @@ def pages_update(request, website_id, page_id):
     file_content = request.POST['fileContent']
 
     # parse the entire file again
-    file = BeautifulSoup(file_content, "html.parser")
+    file = BeautifulSoup(file_content, "html5")
 
     # update all editable contents
     tags = file.select(page.selector)
     # iterate through each textarea content
     for i,content in enumerate(request.POST.getlist('editContent')):
         # parse the new content
-        new_content = BeautifulSoup(content, "html.parser")
+        new_content = BeautifulSoup(content, "html5")
 
         # retrieve the selected element and replace its content by the new_content
         elem = tags[i]
@@ -263,7 +262,7 @@ def pages_add_config(request, website_id):
     selector = request.POST['selector']
 
     try:
-        page = Page.objects.create(
+        Page.objects.create(
             site=site, path=path, selector=selector
         )
         messages.success(request, "Page successfully added")
